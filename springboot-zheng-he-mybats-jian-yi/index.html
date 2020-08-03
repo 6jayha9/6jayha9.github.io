@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Jayha小罗的秘密基地</title>
+<title>springboot整合mybats简易 | Jayha小罗的秘密基地</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -18,10 +18,10 @@
 
 
 
-    <meta name="description" content="欢迎来到Jayha小罗的Blog嘻嘻嘻：）">
-    
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-    
+    <meta name="description" content="导入包不用说
+在主运行类上 加上这个注解，表示扫描包 在yaml文件上配置mybatis配置
+@MapperScan(basePackages ={&quot;cn.gdouJayha.springbootApplication.dao&q..." />
+    <meta name="keywords" content="" />
   </head>
   <body>
     <div id="app" class="main">
@@ -91,27 +91,56 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://https://6jayha9.github.io/springboot-zheng-he-mybats-jian-yi/">
-                  <h2 class="post-title">springboot整合mybats简易</h2>
-                </a>
-                <div class="post-date">
-                  2020-08-03
-                </div>
-                <div class="post-abstract">
-                  
-                </div>
-              </div>
-              
-            </article>
-          
+          <div class="post-detail">
+            <h2 class="post-title">springboot整合mybats简易</h2>
+            <div class="post-date">2020-08-03</div>
+            
+            <div class="post-content" v-pre>
+              <p>导入包不用说</p>
+<p>在主运行类上 加上这个注解，表示扫描包 在yaml文件上配置mybatis配置</p>
+<pre><code class="language-java">@MapperScan(basePackages ={&quot;cn.gdouJayha.springbootApplication.dao&quot;})
+</code></pre>
+<pre><code class="language-yaml">mybatis:
+  #起别名
+  type-aliases-package: cn.gdouJayha.springbootapplication.domain
+  #映射位置
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  
+  check-config-location: true
+  #主配置xml位置
+  config-location: classpath:mybatis/SqlMapConfig.xml
+</code></pre>
+<p>更改pom.xml</p>
+<pre><code class="language-xml">&lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+        &lt;resources&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;src/main/resources&lt;/directory&gt;
+                &lt;!-- src/main/resources下的指定资源放行 --&gt;
+                &lt;includes&gt;
+                    &lt;include&gt;**/*.*&lt;/include&gt;
+                &lt;/includes&gt;
+                &lt;filtering&gt;false&lt;/filtering&gt;
+            &lt;/resource&gt;
+        &lt;/resources&gt;
+    &lt;/build&gt;
+</code></pre>
+<p>如果需要用到事务只能用</p>
+<pre><code class="language-java">@Transactional
+</code></pre>
+<p>注解来使用了</p>
 
-          <div class="pagination-container">
-  
-  
-</div>
+            </div>
+            
+            
+
+            
+
+          </div>
 
         </div>
       </div>
