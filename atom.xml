@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2020-08-04T04:48:45.735Z</updated>
+    <updated>2020-08-04T04:50:49.841Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -10,6 +10,24 @@
     <logo>https://jayhablog.vercel.app/images/avatar.png</logo>
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
     <rights>All rights reserved 2020, Jayha小罗的秘密基地</rights>
+    <entry>
+        <title type="html"><![CDATA[关于本站]]></title>
+        <id>https://jayhablog.vercel.app/guan-yu-ben-zhan/</id>
+        <link href="https://jayhablog.vercel.app/guan-yu-ben-zhan/">
+        </link>
+        <updated>2020-08-04T04:49:58.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
+</blockquote>
+<h2 id="关于本站">🏠 关于本站：</h2>
+<p>#这是Jayha小罗同学无聊之下做的一个简陋博客，旨在分享技术，倾吐垃圾，写矫情文字嘻嘻嘻。</p>
+<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
+<p>#跳舞唱歌敲代码！！！</p>
+<h2 id="联系我呀">📬 联系我呀</h2>
+<p>微信号: Jayha_<br>
+gitee：https://gitee.com/jayha</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[简易快速springboot整合mybats步骤]]></title>
         <id>https://jayhablog.vercel.app/springboot-zheng-he-mybats-jian-yi/</id>
