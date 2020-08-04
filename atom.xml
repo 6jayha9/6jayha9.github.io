@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2020-08-04T06:52:11.860Z</updated>
+    <updated>2020-08-04T07:35:14.737Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -20,10 +20,10 @@
 <p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
 </blockquote>
 <h2 id="关于本站">🏠 关于本站：</h2>
-<h1 id="这是jayha小罗同学无聊之下做的一个简陋博客旨在分享技术倾吐垃圾写矫情文字嘻嘻嘻">这是Jayha小罗同学无聊之下做的一个简陋博客，旨在分享技术，倾吐垃圾，写矫情文字嘻嘻嘻。</h1>
-<h1 id="我也不知道我维护多久可能写几篇之后就不写了懒鬼本鬼谢谢也可能大学四年里一直维护他将就看吧hhhhh">我也不知道我维护多久，可能写几篇之后就不写了（懒鬼本鬼谢谢!）也可能大学四年里一直维护他，将就看吧hhhhh。</h1>
+<p>这是Jayha小罗同学无聊之下做的一个简陋博客，旨在分享技术，倾吐垃圾，写矫情文字嘻嘻嘻。<br>
+我也不知道我维护多久，可能写几篇之后就不写了（懒鬼本鬼谢谢!）也可能大学四年里一直维护他，将就看吧hhhhh。</p>
 <h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<h1 id="跳舞唱歌敲代码">跳舞唱歌敲代码！！！</h1>
+<p>跳舞唱歌敲代码！！！</p>
 <h2 id="联系我呀">📬 联系我呀</h2>
 <p>微信号: Jayha_<br>
 gitee：https://gitee.com/jayha</p>
