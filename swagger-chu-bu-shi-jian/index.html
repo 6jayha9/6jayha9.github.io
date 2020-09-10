@@ -46,22 +46,147 @@
         <main id="main" class="site-main" role="main">
             <article id="post-1270" class="post-1270 post type-post status-publish format-standard hentry category-90 category-129 tag-149">
                 <header class="entry-header">
-                    <h1 class="entry-title">关于本站</h1>
-                    <p class="entry-census">发布于 2020-08-04</p>
+                    <h1 class="entry-title">swagger初步实践</h1>
+                    <p class="entry-census">发布于 2020-09-10</p>
                     <hr>
                 </header>
                 <div class="neko">
-                    <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
+                    <h3 id="swagger">swagger</h3>
+<hr>
+<p>swagger jar</p>
+<pre><code class="language-xml">&lt;!--swagger--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.springfox&lt;/groupId&gt;
+            &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;
+            &lt;version&gt;2.9.2&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.springfox&lt;/groupId&gt;
+            &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;
+            &lt;version&gt;2.9.2&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<p><em>swagger的springboot内类配置</em></p>
+<pre><code class="language-java">package cn.gdoujayha.springbootApplication.config;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.ArrayList;
+import java.util.Properties;
+
+
+@Configuration
+@EnableSwagger2
+public class SwaggerConfig {
+
+    /**
+     * 联系方式（作者名字，联系url，email）
+     */
+    private static final Contact CONTACT = new Contact(&quot;jayha&quot;,&quot;https://jayhablog.vercel.app&quot;,&quot;1902980268@qq.com&quot;) ;
+
+    /*
+        配置swagger的docket bean实例
+         */
+    @Bean
+    /*@ConditionalOnProperty(prefix = &quot;profiles&quot;,havingValue = &quot;dev&quot;)*/
+    public Docket docket(Environment environment){
+
+
+        Profiles profiles = Profiles.of(&quot;dev&quot;,&quot;test&quot;);
+        boolean flag = environment.acceptsProfiles(profiles);//“仅在dev和test环境下生效”
+
+
+       return  new Docket(DocumentationType.SWAGGER_2)
+                .groupName(&quot;jayha&quot;)//设置分组名 可以设置多个分组（多人协同的时候，可以一人一个或多个组）
+                .enable(flag)
+                .apiInfo(apiInfo())
+                .select()
+                /**
+                 * apis：配置所需要扫描的地方
+                 * requestHandlerSelectors有方式
+                 * .basePackage配置扫描包
+                 * .any扫描所有地方
+                 * .none全不扫描
+                 * .withClassAnnotation()只扫描类上有加了传入注解class的的那个注解的类（传入注解的class）
+                 */
+                .apis(RequestHandlerSelectors.basePackage(&quot;cn.gdoujayha.springbootApplication.controller&quot;))//配置扫描包
+                /**
+                 * paths配置过滤的路径
+                 * 使用pathselector下的东西
+                 * 下有：
+                 * any全部
+                 * none全否
+                 * regex：正则
+                 * ant（一般用这个）路径
+                 */
+                //.paths(PathSelectors.ant(&quot;/springbootApplication/controller/reginController/**&quot;))
+                .build()
+                ;
+    }
+
+    /**
+     * apiinfo的配置
+     * @return
+     */
+    private ApiInfo apiInfo(){
+        return new ApiInfo(&quot;Jayha‘文档&quot;,
+                &quot;关于''项目的swagger文档&quot;,
+                &quot;0.1&quot;,
+                &quot;urn:tos&quot;,
+                CONTACT,
+                &quot;Apache 2.0&quot;,
+                &quot;http://www.apache.org/licenses/LICENSE-2.0&quot;,
+                new ArrayList());
+    }
+}
+
+</code></pre>
+<blockquote>
+<h3 id="常用注解">常用注解</h3>
 </blockquote>
-<h2 id="关于本站">🏠 关于本站：</h2>
-<p>这是Jayha小罗同学无聊之下做的一个简陋博客，旨在分享技术，倾吐垃圾，写矫情文字嘻嘻嘻。<br>
-我也不知道我维护多久，可能写几篇之后就不写了（懒鬼本鬼谢谢!）也可能大学四年里一直维护他，将就看吧hhhhh。</p>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>跳舞唱歌敲代码！！！</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>微信号: Jayha_<br>
-gitee：https://gitee.com/jayha</p>
+<p>Swagger的所有注解定义在io.swagger.annotations包下</p>
+<p>下面列一些经常用到的，未列举出来的可以另行查阅说明：</p>
+<table>
+<thead>
+<tr>
+<th>Swagger注解</th>
+<th style="text-align:center">简单说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@Api(tags = &quot;xxx模块说明&quot;)</td>
+<td style="text-align:center">作用在模块类上</td>
+</tr>
+<tr>
+<td>@ApiOperation(&quot;xxx接口说明&quot;)</td>
+<td style="text-align:center">作用在接口方法上</td>
+</tr>
+<tr>
+<td>@ApiModel(&quot;xxxPOJO说明&quot;)</td>
+<td style="text-align:center">作用在模型类上：如VO、BO</td>
+</tr>
+<tr>
+<td>@ApiModelProperty(value = &quot;xxx属性说明&quot;,hidden = true)</td>
+<td style="text-align:center">作用在类方法和属性上，hidden设置为true可以隐藏该属性</td>
+</tr>
+<tr>
+<td>@ApiParam(&quot;xxx参数说明&quot;)</td>
+<td style="text-align:center">作用在参数、方法和字段上，类似@ApiModelProperty</td>
+</tr>
+</tbody>
+</table>
 
                 </div>
             </article>
@@ -71,20 +196,14 @@ gitee：https://gitee.com/jayha</p>
         <div class="mdui-container">
             <div class="mdui-row">
                 
-                <a href="https://jayhablog.vercel.app/swagger-chu-bu-shi-jian/" class="mdui-ripple mdui-color-theme mdui-col-xs-2 mdui-col-sm-6 doc-footer-nav-left">
-                    <div class="doc-footer-nav-text">
-                        <i class="mdui-icon material-icons">arrow_back</i>
-                        <span class="doc-footer-nav-direction mdui-hidden-xs-down">上一篇文章</span>
-                        <div class="doc-footer-nav-chapter mdui-hidden-xs-down">swagger初步实践</div>
-                    </div>
-                </a>
+                <div class="mdui-col-xs-2 mdui-col-sm-6 doc-footer-nav-left"></div>
                 
                 
-                <a href="https://jayhablog.vercel.app/springboot-zheng-he-mybats-jian-yi/" class="mdui-ripple mdui-color-theme mdui-col-xs-10 mdui-col-sm-6 doc-footer-nav-right">
+                <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan/" class="mdui-ripple mdui-color-theme mdui-col-xs-10 mdui-col-sm-6 doc-footer-nav-right">
                     <div class="doc-footer-nav-text">
                         <i class="mdui-icon material-icons">arrow_forward</i>
                         <span class="doc-footer-nav-direction">下一篇文章</span>
-                        <div class="doc-footer-nav-chapter">简易快速springboot整合mybats步骤</div>
+                        <div class="doc-footer-nav-chapter">关于本站</div>
                     </div>
                 </a>
                 
