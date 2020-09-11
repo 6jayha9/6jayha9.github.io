@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>springboot集成定时，异步，邮件任务 | Jayha小罗的秘密基地</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1599806225171">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="异步
+
+springboot主类下用@EnableAsync 开启异步
+在需要用异步的方法上使用@Async注解，该任务会自动进入一个新进程，自动异步
+邮件
+
+jar
+&lt;!-- https://mvnrepository.com/ar..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1599806225171" class="site-logo">
+        <h1 class="site-title">Jayha小罗的秘密基地</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">springboot集成定时，异步，邮件任务</h2>
+            <div class="post-date">2020-09-11</div>
+            
+              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/springboot-ji-cheng-ding-shi-yi-bu-you-jian-ren-wu.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <h2 id="异步">异步</h2>
+<hr>
+<p>springboot主类下用@EnableAsync 开启异步</p>
+<p>在需要用异步的方法上使用@Async注解，该任务会自动进入一个新进程，自动异步</p>
+<h2 id="邮件">邮件</h2>
+<hr>
+<p>jar</p>
+<pre><code class="language-xml">&lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+</code></pre>
+<p>yaml配置信息</p>
+<pre><code class="language-yaml">spring:
+   mail:
+     username: your_mail@xx.com
+     password: your_password
+     host: smtp.163.com  #example
+     protocol: smtps   #example
+</code></pre>
+<p>springboot自动装JavaMailSenderImpl的实体类</p>
+<pre><code class="language-java">//源码
+@Bean
+    JavaMailSenderImpl mailSender(Session session) {
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
+        sender.setSession(session);
+        return sender;
+    }
+</code></pre>
+<p>按照配置文件的属性进行创建，可以直接注入</p>
+<pre><code class="language-java"> @Autowired
+    private JavaMailSenderImpl mailSender;
+</code></pre>
+<p>之后直接用mailsender所提供的各种send进行发送就行 示例：</p>
+<pre><code class="language-java">@Test
+    void contextLoads()  {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setSubject(&quot;早上好&quot;);
+        mailMessage.setText(&quot;goodMoring&quot;);
+        mailMessage.setTo(&quot;send_mail@qq.com&quot;);
+        mailMessage.setFrom(&quot;your_mail@163.com&quot;);
+        mailSender.send(mailMessage);
+    }
+</code></pre>
+<p>若要发送复杂邮件 则可以取消simpleMailMessage类 用</p>
+<pre><code class="language-java">MimeMessage mimeMessage = mailSender.createMimeMessage();
+</code></pre>
+<p>复杂类对象</p>
+<pre><code class="language-java">        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+        helper.setSubject(&quot;早上好&quot;);
+        helper.setText(&quot;&lt;a herf='www.baidu.com' &gt;今天 7:30来开会&lt;/a&gt;&quot;,true);
+
+        //发送附件
+        helper.addAttachment(&quot;1.jpg&quot;,new File(&quot;C:\\Users\\19029\\Desktop\\杂七杂八~\\1.jpg&quot;));
+
+        helper.setTo(&quot;1902980268@qq.com&quot;);
+        helper.setFrom(&quot;15999971548@163.com&quot;);
+        mailSender.send(mimeMessage);
+</code></pre>
+<h2 id="定时">定时</h2>
+<hr>
+<p>项目开发中经常需要执行一些定时任务，比如需要在每天凌晨的时候，分析一次前一天的日志信息，Spring为我们提供了异步执行任务调度的方式，提供了两个接口。</p>
+<ul>
+<li>TaskExecutor接口</li>
+<li>TaskScheduler接口</li>
+</ul>
+<p>两个注解：</p>
+<ul>
+<li>@EnableScheduling// 主main方法上 表示开启定时任务</li>
+<li>@Scheduled//写cron表达式 表示什么时候</li>
+</ul>
+<figure data-type="image" tabindex="1"><img src="C:%5CUsers%5C19029%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200911141657793.png" alt="image-20200911141657793" loading="lazy"></figure>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/swagger-chu-bu-shi-jian/">
+                  <h3 class="post-title">
+                    swagger初步实践
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
