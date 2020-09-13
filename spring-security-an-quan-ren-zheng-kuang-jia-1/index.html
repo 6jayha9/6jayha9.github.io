@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" >
 
-<title>spring-security安全认证框架--1 | Jayha小罗的秘密基地</title>
+<title>spring-security安全认证框架Part1（非OAuth2部分） | Jayha小罗的秘密基地</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
-<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1599995658189">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1599995899625">
 <link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
 
 
@@ -20,15 +20,15 @@
 
 
 
-    <meta name="description" content="spring-security
-
+    <meta name="description" content="
 spring-security是通过servlet的filter链方式实现的一种认证，授权
 
 快速入门（在内存中使用）；
 在内存中的使用非常简单
 阅读代码即可
 @Configuration
-@EnableW..." />
+@EnableWebSecurity
+publi..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -38,7 +38,7 @@ spring-security是通过servlet的filter链方式实现的一种认证，授权
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://jayhablog.vercel.app">
-        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1599995658189" class="site-logo">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1599995899625" class="site-logo">
         <h1 class="site-title">Jayha小罗的秘密基地</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -96,15 +96,14 @@ spring-security是通过servlet的filter链方式实现的一种认证，授权
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">spring-security安全认证框架--1</h2>
+            <h2 class="post-title">spring-security安全认证框架Part1（非OAuth2部分）</h2>
             <div class="post-date">2020-09-13</div>
             
               <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/spring-security-an-quan-ren-zheng-kuang-jia-1.png')">
               </div>
             
             <div class="post-content" v-pre>
-              <h2 id="spring-security">spring-security</h2>
-<hr>
+              <hr>
 <p>spring-security是通过servlet的filter链方式实现的一种认证，授权<br>
 <img src="https://jayhablog.vercel.app/post-images/1599995513270.png" alt="" loading="lazy"><br>
 快速入门（在内存中使用）；</p>
