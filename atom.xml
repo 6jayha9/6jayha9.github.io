@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2020-09-11T06:40:01.787Z</updated>
+    <updated>2020-09-13T11:14:21.749Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -10,6 +10,212 @@
     <logo>https://jayhablog.vercel.app/images/avatar.png</logo>
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
     <rights>All rights reserved 2020, Jayha小罗的秘密基地</rights>
+    <entry>
+        <title type="html"><![CDATA[springsecurityPart2--OAuth2]]></title>
+        <id>https://jayhablog.vercel.app/springsecuritypart2-oauth2/</id>
+        <link href="https://jayhablog.vercel.app/springsecuritypart2-oauth2/">
+        </link>
+        <updated>2020-09-13T11:13:02.000Z</updated>
+        <content type="html"><![CDATA[<p>正在写哦！</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[spring-security安全认证框架--1]]></title>
+        <id>https://jayhablog.vercel.app/spring-security-an-quan-ren-zheng-kuang-jia-1/</id>
+        <link href="https://jayhablog.vercel.app/spring-security-an-quan-ren-zheng-kuang-jia-1/">
+        </link>
+        <updated>2020-09-13T11:09:48.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="spring-security">spring-security</h2>
+<hr>
+<p>spring-security是通过servlet的filter链方式实现的一种认证，授权<br>
+<img src="https://jayhablog.vercel.app/post-images/1599995513270.png" alt="" loading="lazy"><br>
+快速入门（在内存中使用）；</p>
+<p>在内存中的使用非常简单</p>
+<p>阅读代码即可</p>
+<pre><code class="language-java">@Configuration
+@EnableWebSecurity
+public class securityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public UserDetailsService userDetailsService(){
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        return  manager;
+    }
+    /**
+     * 该方法是授权相关方法
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //首页所有人可以访问&quot;/&quot;
+        http.authorizeRequests()
+                .antMatchers(&quot;/&quot;).permitAll()
+                .antMatchers(&quot;/index.html&quot;).permitAll()
+                .antMatchers(&quot;/index&quot;).permitAll()
+                .antMatchers(&quot;/home&quot;).permitAll()
+                .antMatchers(&quot;/welcome&quot;).permitAll()
+                .antMatchers(&quot;/level1/**&quot;).hasRole(&quot;vip1&quot;)
+                .antMatchers(&quot;/level2/**&quot;).hasRole(&quot;vip2&quot;)
+                .antMatchers(&quot;/level3/**&quot;).hasRole(&quot;vip3&quot;)
+        .and().formLogin()//开启自定义页面
+                .loginPage(&quot;/userlogin&quot;).loginProcessingUrl(&quot;/welcome&quot;).usernameParameter(&quot;username&quot;).passwordParameter(&quot;password&quot;).
+                failureHandler((req, resp, exception) -&gt; {
+                    resp.setContentType(&quot;application/json;charset=utf-8&quot;);
+                            PrintWriter out = resp.getWriter();
+                            out.write(&quot;登录失败...&quot;);
+                    out.flush();
+                })
+                .permitAll()
+                .and()
+                .httpBasic()
+                .and()
+                // 关闭CSRF跨域
+                .csrf().disable();
+        ;
+        //没有权限跳到登录页
+        /*http.formLogin();*/
+        //关闭csrf功能
+        //http.csrf().disable();
+        //开启注销 成功跳到“/”
+        http.logout().logoutSuccessUrl(&quot;/&quot;);
+    }
+
+    /**
+     * 该方法是认证相关方法
+     * @param auth
+     * @throws Exception
+     */
+    /*@Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //从内存中读
+        //使用BCrypt加密
+
+        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder())
+                .withUser(&quot;jayha&quot;).password(passwordEncoder().encode(&quot;123456&quot;)).roles(&quot;vip3&quot;,&quot;vip2&quot;)
+                .and()
+                .withUser(&quot;nanha&quot;).password(passwordEncoder().encode(&quot;123456&quot;)).roles(&quot;vip1&quot;);
+
+    }*/
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // 设置拦截忽略url - 会直接过滤该url - 将不会经过Spring Security过滤器链
+        web.ignoring().antMatchers(&quot;/getUserInfo&quot;);
+        // 设置拦截忽略文件夹，可以对静态资源放行
+        web.ignoring().antMatchers(&quot;/css/**&quot;, &quot;/js/**&quot;);
+
+    }
+}
+</code></pre>
+<hr>
+<hr>
+<p>BCryptPasswordEncoder</p>
+<p>是spring提供的一种特殊加密方式，建议数据库以次类方式存储，有静态方法hashpw(实际密码，盐分值[也可由Bcrypt自动生成])</p>
+<pre><code class="language-java">void testBcrypto(){
+        String s1 = BCrypt.hashpw(&quot;sir159357&quot;, BCrypt.gensalt());
+        String s2 = BCrypt.hashpw(&quot;sir159357&quot;, BCrypt.gensalt());
+
+        System.out.println(s1);
+        System.out.println(s2);
+    }
+</code></pre>
+<p>结果</p>
+<pre><code class="language-tex">s1:$2a$10$WH2U/RLezICmMu8cAN2kQ.vWb46UOEtYbHgMeri8bc4JHGtKVGSKy
+
+s2:$2a$10$aLTNf4pFC3OwyEM/r.9aeepuid9efVaLlvdqpNEDO01vPX.17kc0O
+</code></pre>
+<p>所以配置一个名为passwordEncoder的bean 该bean返回的值 就是security的编码方式</p>
+<pre><code class="language-java">@Bean
+    public PasswordEncoder passwordEncoder() {
+        // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
+        return new BCryptPasswordEncoder();
+    }
+</code></pre>
+<p>接下来 我们就可以从内存过渡到数据库了</p>
+<p>回到springsecurity流程图 我们可以发现认证是由一个叫做UserDetailsService的接口进行实现的。我们可以实现这个接口并把ta加入到IOC容器中</p>
+<pre><code class="language-java">@Service
+public class userdetailService implements UserDetailsService {
+
+    @Autowired
+    ItestuserDAO itestuserDAO;
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        testuser one = itestuserDAO.findOneByAccount(s);
+        if(one == null){
+            return null;//不用自己抛出异常 返回NULL spring=security会自动整理
+        }else{
+            UserDetails details = User.withUsername(one.getAccount()).password(one.getPassword()).authorities(&quot;vip1&quot;).build();//withusername方法即把username加入 password同理，authorities则是将用户进行授权操作
+            return details;
+        }
+    }
+}
+</code></pre>
+<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现 要注意更改</p>
+<p><s>俺最初没理解好这两个东西的概念在这疯狂踩坑</s></p>
+<pre><code class="language-java">@Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //首页所有人可以访问&quot;/&quot;
+        http.authorizeRequests()
+                .antMatchers(&quot;/&quot;).permitAll()
+                .antMatchers(&quot;/index.html&quot;).permitAll()
+                .antMatchers(&quot;/index&quot;).permitAll()
+                .antMatchers(&quot;/home&quot;).permitAll()
+                .antMatchers(&quot;/welcome&quot;).permitAll()
+                .antMatchers(&quot;/level1/**&quot;).hasAuthority(&quot;vip1&quot;)
+                .antMatchers(&quot;/level2/**&quot;).hasAuthority(&quot;vip2&quot;)
+                .antMatchers(&quot;/level3/**&quot;).hasAuthority(&quot;vip3&quot;)
+                .and()
+                .formLogin()//开启自定义页面
+                .loginPage(&quot;/userlogin&quot;)
+                .loginProcessingUrl(&quot;/welcome&quot;)
+                .usernameParameter(&quot;username&quot;)
+                .passwordParameter(&quot;password&quot;)
+
+                .failureHandler((req, resp, exception) -&gt; {
+                    resp.setContentType(&quot;application/json;charset=utf-8&quot;);
+                            PrintWriter out = resp.getWriter();
+                            out.write(&quot;登录失败...&quot;);
+                    out.flush();
+                }).permitAll()
+                .and()
+                .httpBasic()
+                .and()
+                // 关闭CSRF跨域
+                .csrf().disable().cors();
+        ;
+        http.logout().logoutSuccessUrl(&quot;/&quot;);
+    }
+</code></pre>
+<h5 id="用户登录后获取用户信息">用户登录后获取用户信息</h5>
+<p>可以使用</p>
+<pre><code class="language-java">Authentication authentication =SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+</code></pre>
+<p>principal就是UserDetail对象 可以强转后使用它的各种方法 比如获取姓名：</p>
+<pre><code class="language-java"> @GetMapping(&quot;/getName&quot;)
+    public String getUserAccount(){
+        String account= null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal == null){
+            account = &quot;匿名&quot;;
+        }
+        if(principal instanceof UserDetails){
+            UserDetails u = (UserDetails)principal;
+            account = u.getUsername();
+        }
+        return account;
+    }
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[springboot集成定时，异步，邮件任务]]></title>
         <id>https://jayhablog.vercel.app/springboot-ji-cheng-ding-shi-yi-bu-you-jian-ren-wu/</id>
