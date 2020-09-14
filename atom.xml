@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2020-09-13T11:18:23.683Z</updated>
+    <updated>2020-09-14T10:54:17.441Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -147,7 +147,7 @@ public class userdetailService implements UserDetailsService {
     }
 }
 </code></pre>
-<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现 要注意更改</p>
+<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现，现在一般是role（角色）包含auth（权限）这种操作  要注意更改</p>
 <p><s>俺最初没理解好这两个东西的概念在这疯狂踩坑</s></p>
 <pre><code class="language-java">@Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -203,6 +203,28 @@ public class userdetailService implements UserDetailsService {
         }
         return account;
     }
+</code></pre>
+<p>数据库的建立 除了用户类外 还要有角色表 与用户表是多对多关系 还要有权限表 和角色表也是多对多关系由于这个sql比较复杂 建议用mybatis</p>
+<p>由于我们之后使用token来保持会话，所以 我们可以将session保持会话方式禁用</p>
+<p><s>建议在学了token之后再关</s></p>
+<pre><code class="language-java">protected void configure(HttpSecurity http) throws Exception {http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);}
+</code></pre>
+<hr>
+<h4 id="方法授权">方法授权</h4>
+<p>在配置类上（加了configuration注解的类）使用</p>
+<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true )
+</code></pre>
+<p>开启方法授权 secured注解API支持</p>
+<pre><code class="language-java">@Secured(&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;)//允许匿名访问的方法（即任何人都可以访问）
+@Secured(&quot;ROLE_xx&quot;)//只有xx角色的可以访问
+
+</code></pre>
+<p>但不建议使用这个</p>
+<p>建议使用prepost注解</p>
+<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
+</code></pre>
+<pre><code class="language-java">@PreAuthorize(&quot;isAnonymous()&quot;) 匿名可以访问
+@PreAuthorize(&quot;hasAuthority('vip1','vip2')&quot;)有vip1和vip2的可以访问
 </code></pre>
 ]]></content>
     </entry>

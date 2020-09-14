@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
-<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1599995899625">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1600080854484">
 <link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
 
 
@@ -38,7 +38,7 @@ publi..." />
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://jayhablog.vercel.app">
-        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1599995899625" class="site-logo">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1600080854484" class="site-logo">
         <h1 class="site-title">Jayha小罗的秘密基地</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -234,7 +234,7 @@ public class userdetailService implements UserDetailsService {
     }
 }
 </code></pre>
-<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现 要注意更改</p>
+<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现，现在一般是role（角色）包含auth（权限）这种操作  要注意更改</p>
 <p><s>俺最初没理解好这两个东西的概念在这疯狂踩坑</s></p>
 <pre><code class="language-java">@Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -290,6 +290,28 @@ public class userdetailService implements UserDetailsService {
         }
         return account;
     }
+</code></pre>
+<p>数据库的建立 除了用户类外 还要有角色表 与用户表是多对多关系 还要有权限表 和角色表也是多对多关系由于这个sql比较复杂 建议用mybatis</p>
+<p>由于我们之后使用token来保持会话，所以 我们可以将session保持会话方式禁用</p>
+<p><s>建议在学了token之后再关</s></p>
+<pre><code class="language-java">protected void configure(HttpSecurity http) throws Exception {http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);}
+</code></pre>
+<hr>
+<h4 id="方法授权">方法授权</h4>
+<p>在配置类上（加了configuration注解的类）使用</p>
+<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true )
+</code></pre>
+<p>开启方法授权 secured注解API支持</p>
+<pre><code class="language-java">@Secured(&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;)//允许匿名访问的方法（即任何人都可以访问）
+@Secured(&quot;ROLE_xx&quot;)//只有xx角色的可以访问
+
+</code></pre>
+<p>但不建议使用这个</p>
+<p>建议使用prepost注解</p>
+<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
+</code></pre>
+<pre><code class="language-java">@PreAuthorize(&quot;isAnonymous()&quot;) 匿名可以访问
+@PreAuthorize(&quot;hasAuthority('vip1','vip2')&quot;)有vip1和vip2的可以访问
 </code></pre>
 
             </div>
