@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2020-09-17T11:06:35.481Z</updated>
+    <updated>2020-09-24T10:27:37.544Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -488,12 +488,13 @@ gitee：https://gitee.com/jayha</p>
         <link href="https://jayhablog.vercel.app/springboot-zheng-he-mybats-jian-yi/">
         </link>
         <updated>2020-08-03T15:25:41.000Z</updated>
-        <content type="html"><![CDATA[<p>导入包不用说</p>
-<p>在主运行类上 加上这个注解，表示扫描包 在yaml文件上配置mybatis配置</p>
+        <content type="html"><![CDATA[<h2 id=""></h2>
+<p>`mybatis整合</p>
+<p>导入包不用说</p>
+<p>在主运行类上 加上这个注解，表示给这个包都加上mapper注解</p>
+<p>在yaml文件上配置mybatis配置</p>
 <pre><code class="language-java">@MapperScan(basePackages ={&quot;cn.gdouJayha.springbootApplication.dao&quot;})
 </code></pre>
-<h3 id=""></h3>
-<p>在yaml文件上 配置mybatis相关属性设置（部分）</p>
 <pre><code class="language-yaml">mybatis:
   #起别名
   type-aliases-package: cn.gdouJayha.springbootapplication.domain
@@ -504,7 +505,8 @@ gitee：https://gitee.com/jayha</p>
   #主配置xml位置
   config-location: classpath:mybatis/SqlMapConfig.xml
 </code></pre>
-<p>更改pom.xml，停止过滤mybatis配置文件</p>
+<h2 id="-2"></h2>
+<p>更改pom.xml</p>
 <pre><code class="language-xml">&lt;plugins&gt;
             &lt;plugin&gt;
                 &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
@@ -523,9 +525,11 @@ gitee：https://gitee.com/jayha</p>
         &lt;/resources&gt;
     &lt;/build&gt;
 </code></pre>
-<p>如果需要用到事务尽力可以使用注解解决</p>
+<p>如果需要用到事务尽量用<br>
+@EnableTransactionManagement开启事务</p>
 <pre><code class="language-java">@Transactional
 </code></pre>
+<p>该注解放在方法上开启事务</p>
 ]]></content>
     </entry>
 </feed>
