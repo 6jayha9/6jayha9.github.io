@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>算法归纳 | Jayha小罗的秘密基地</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1603369813068">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="快慢指针
+floyd判圈算法（龟兔赛跑算法）
+
+遇到场合：判断链表是否循环
+
+算法描述：
+假想「乌龟」和「兔子」在链表上移动，「兔子」跑得快，「乌龟」跑得慢。当「乌龟」和「兔子」从链表上的同一个节点开始移动时，如果该链表中没有环，那么「兔子..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1603369813068" class="site-logo">
+        <h1 class="site-title">Jayha小罗的秘密基地</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">算法归纳</h2>
+            <div class="post-date">2020-10-22</div>
+            
+              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/kuai-man-zhi-zhen.png')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <h2 id="快慢指针">快慢指针</h2>
+<h4 id="floyd判圈算法龟兔赛跑算法">floyd判圈算法（龟兔赛跑算法）</h4>
+<blockquote>
+<p>遇到场合：判断链表是否循环</p>
+</blockquote>
+<h6 id="算法描述">算法描述：</h6>
+<p>假想「乌龟」和「兔子」在链表上移动，「兔子」跑得快，「乌龟」跑得慢。当「乌龟」和「兔子」从链表上的同一个节点开始移动时，如果该链表中没有环，那么「兔子」将一直处于「乌龟」的前方；如果该链表中有环，那么「兔子」会先于「乌龟」进入环，并且一直在环内移动。等到「乌龟」进入环时，由于「兔子」的速度快，它一定会在某个时刻与乌龟相遇，即套了「乌龟」若干圈。</p>
+<p>即有两个指针，他们速度不同 如 A指针=A指针.next B指针=B指针.next.next 那么他们肯定会相遇</p>
+<pre><code class="language-java">public boolean hasCycle(ListNode head){
+        if (head == null || head.next == null) {
+            return false;//只有两个时候不用判断
+        }
+        ListNode A= head;//慢指针（乌龟指针）
+        ListNode B =head.next;//快指针（兔子指针）
+        while(A != B){
+        if (B == null|| B.next==null){
+            return  false;
+        }
+            A= A.next;
+            B=B.next.next;
+        }
+        return  true;
+</code></pre>
+<p>时间复杂度O（N）</p>
+<p>空间复杂度O（1）</p>
+<hr>
+<h2 id="贪心算法">贪心算法</h2>
+<p>划分字母区间</p>
+<p>题目</p>
+<blockquote>
+<blockquote>
+<p>字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一个字母只会出现在其中的一个片段。返回一个表示每个字符串片段的长度的列表。</p>
+<p>示例 1：</p>
+<p>输入：S = &quot;ababcbacadefegdehijhklij&quot;<br>
+输出：[9,7,8]<br>
+解释：<br>
+划分结果为 &quot;ababcbaca&quot;, &quot;defegde&quot;, &quot;hijhklij&quot;。<br>
+每个字母最多出现在一个片段中。<br>
+像 &quot;ababcbacadefegde&quot;, &quot;hijhklij&quot; 的划分是错误的，因为划分的片段数较少。</p>
+<p>来源：力扣（LeetCode）<br>
+链接：https://leetcode-cn.com/problems/partition-labels<br>
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+</blockquote>
+<p>该题使用贪心算法，具体思路为，先把字符串中出现的char，将他们最后出现的下标保存在一个长度为26（因为有26个字母）的数组内</p>
+<pre><code class="language-java">for (int i = 0; i &lt; 所给定字符串.length; i++) {
+            last[S.charAt(i) - 'a'] = i;
+        }
+</code></pre>
+<p>然后设置两个指针start和end，初始时为0，然后</p>
+<pre><code class="language-java">end = Math.max(end, last[S.charAt(i) - 'a']);
+</code></pre>
+<p>end不断更新为i字符在该字符串的最后位置，如果在i！=end时候有字符还有更后的最后位置，那么end就会更新为该字符的最后位置。</p>
+<p>如果i==end时候，就代表获取了这个字符区间长度（因为前面的字符都不会在剩余的字符串中出现，可以切的尽量多）。</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/redis-zuo-wei-nosql-de-shi-yong-xiang-xi-yu-ji-cheng-dao-springboot-huan-cun/">
+                  <h3 class="post-title">
+                    redis作为nosql的使用（详细）与集成到springboot缓存
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
