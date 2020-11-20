@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2020-10-22T12:34:10.533Z</updated>
+    <updated>2020-11-20T08:18:25.722Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -10,6 +10,418 @@
     <logo>https://jayhablog.vercel.app/images/avatar.png</logo>
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
     <rights>All rights reserved 2020, Jayha小罗的秘密基地</rights>
+    <entry>
+        <title type="html"><![CDATA[springboot整合apchepoi 实现excel的导入导出]]></title>
+        <id>https://jayhablog.vercel.app/springboot-zheng-he-apchepoi-shi-xian-excel-de-dao-ru-dao-chu/</id>
+        <link href="https://jayhablog.vercel.app/springboot-zheng-he-apchepoi-shi-xian-excel-de-dao-ru-dao-chu/">
+        </link>
+        <updated>2020-11-20T08:17:31.000Z</updated>
+        <content type="html"><![CDATA[<p>转自ruoyi开发文档</p>
+<h2 id="导入导出">导入导出</h2>
+<p>在实际开发中经常需要使用导入导出功能来加快数据的操作。在项目中可以使用注解来完成此项功能。 在需要被导入导出的实体类属性添加<code>@Excel</code>注解  该注解编写在转载者在桌面的utils包内（以改良ruoyi包下的excelUtil 支持date、localdate、localdatetime转换。如有需要可以联系本网站管理员）</p>
+<p>目前支持参数如下：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sort</td>
+<td>int</td>
+<td>Integer.MAX_VALUE</td>
+<td>导出时在excel中排序</td>
+</tr>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>空</td>
+<td>导出到Excel中的名字</td>
+</tr>
+<tr>
+<td>dateFormat</td>
+<td>String</td>
+<td>空</td>
+<td>日期格式, 如: yyyy-MM-dd</td>
+</tr>
+<tr>
+<td>dictType</td>
+<td>String</td>
+<td>空</td>
+<td>如果是字典类型，请设置字典的type值 (如: sys_user_sex)</td>
+</tr>
+<tr>
+<td>readConverterExp</td>
+<td>String</td>
+<td>空</td>
+<td>读取内容转表达式 (如: 0=男,1=女,2=未知)</td>
+</tr>
+<tr>
+<td>separator</td>
+<td>String</td>
+<td>,</td>
+<td>分隔符，读取字符串组内容</td>
+</tr>
+<tr>
+<td>scale</td>
+<td>int</td>
+<td>-1</td>
+<td>BigDecimal 精度 默认:-1(默认不开启BigDecimal格式化)</td>
+</tr>
+<tr>
+<td>roundingMode</td>
+<td>int</td>
+<td>BigDecimal.ROUND_HALF_EVEN</td>
+<td>BigDecimal 舍入规则 默认:BigDecimal.ROUND_HALF_EVEN</td>
+</tr>
+<tr>
+<td>columnType</td>
+<td>Enum</td>
+<td>Type.STRING</td>
+<td>导出类型（0数字 1字符串）</td>
+</tr>
+<tr>
+<td>height</td>
+<td>String</td>
+<td>14</td>
+<td>导出时在excel中每个列的高度 单位为字符</td>
+</tr>
+<tr>
+<td>width</td>
+<td>String</td>
+<td>16</td>
+<td>导出时在excel中每个列的宽 单位为字符</td>
+</tr>
+<tr>
+<td>suffix</td>
+<td>String</td>
+<td>空</td>
+<td>文字后缀,如% 90 变成90%</td>
+</tr>
+<tr>
+<td>defaultValue</td>
+<td>String</td>
+<td>空</td>
+<td>当值为空时,字段的默认值</td>
+</tr>
+<tr>
+<td>prompt</td>
+<td>String</td>
+<td>空</td>
+<td>提示信息</td>
+</tr>
+<tr>
+<td>combo</td>
+<td>String</td>
+<td>Null</td>
+<td>设置只能选择不能输入的列内容</td>
+</tr>
+<tr>
+<td>targetAttr</td>
+<td>String</td>
+<td>空</td>
+<td>另一个类中的属性名称,支持多级获取,以小数点隔开</td>
+</tr>
+<tr>
+<td>isStatistics</td>
+<td>boolean</td>
+<td>false</td>
+<td>是否自动统计数据,在最后追加一行统计数据总和</td>
+</tr>
+<tr>
+<td>type</td>
+<td>Enum</td>
+<td>Type.ALL</td>
+<td>字段类型（0：导出导入；1：仅导出；2：仅导入）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="导出实现流程">导出实现流程</h3>
+<p>1、前端调用封装好的方法$.table.init，传入后台<code>exportUrl</code></p>
+<pre><code class="language-javascript">var options = {
+	exportUrl: prefix + &quot;/export&quot;,
+	columns: [{
+		field: 'id',
+		title: '主键'
+	},
+	{
+		field: 'name',
+		title: '名称'
+	}]
+};
+$.table.init(options);
+</code></pre>
+<p>2、添加导出按钮事件</p>
+<pre><code class="language-html">&lt;a class=&quot;btn btn-warning&quot; onclick=&quot;$.table.exportExcel()&quot;&gt;
+	&lt;i class=&quot;fa fa-download&quot;&gt;&lt;/i&gt; 导出
+&lt;/a&gt;
+</code></pre>
+<p>3、在实体变量上添加@Excel注解</p>
+<pre><code class="language-java">@Excel(name = &quot;用户序号&quot;, prompt = &quot;用户编号&quot;)
+private Long userId;
+
+@Excel(name = &quot;用户名称&quot;)
+private String userName;
+	
+@Excel(name = &quot;用户性别&quot;, readConverterExp = &quot;0=男,1=女,2=未知&quot;)
+private String sex;
+
+@Excel(name = &quot;最后登陆时间&quot;, width = 30, dateFormat = &quot;yyyy-MM-dd HH:mm:ss&quot;)
+private Date loginDate;
+</code></pre>
+<p>4、在Controller添加导出方法</p>
+<pre><code class="language-java">@PostMapping(&quot;/export&quot;)
+@ResponseBody
+public AjaxResult export(User user)
+{
+	List&lt;User&gt; list = userService.selectUserList(user);
+	ExcelUtil&lt;User&gt; util = new ExcelUtil&lt;User&gt;(User.class);
+	return util.exportExcel(list, &quot;用户数据&quot;);
+}
+</code></pre>
+<h3 id="导入实现流程">导入实现流程</h3>
+<p>1、前端调用封装好的方法$.table.init，传入后台importUrl。</p>
+<pre><code class="language-javascript">var options = {
+	importUrl: prefix + &quot;/importData&quot;,
+	columns: [{
+		field: 'id',
+		title: '主键'
+	},
+	{
+		field: 'name',
+		title: '名称'
+	}]
+};
+$.table.init(options);
+</code></pre>
+<p>2、添加导入按钮事件</p>
+<pre><code class="language-html">&lt;a class=&quot;btn btn-info&quot; onclick=&quot;$.table.importExcel()&quot;&gt;
+	&lt;i class=&quot;fa fa-upload&quot;&gt;&lt;/i&gt; 导入
+&lt;/a&gt;
+</code></pre>
+<p>3、添加导入前端代码，form默认id为importForm，也可指定importExcel(id)</p>
+<pre><code class="language-html">&lt;!-- 导入区域 --&gt;
+&lt;script id=&quot;importTpl&quot; type=&quot;text/template&quot;&gt;
+&lt;form enctype=&quot;multipart/form-data&quot; class=&quot;mt20 mb10&quot;&gt;
+	&lt;div class=&quot;col-xs-offset-1&quot;&gt;
+		&lt;input type=&quot;file&quot; id=&quot;file&quot; name=&quot;file&quot;/&gt;
+		&lt;div class=&quot;mt10 pt5&quot;&gt;
+			&lt;input type=&quot;checkbox&quot; id=&quot;updateSupport&quot; name=&quot;updateSupport&quot; title=&quot;如果登录账户已经存在，更新这条数据。&quot;&gt; 是否更新已经存在的用户数据
+			 &amp;nbsp;	&lt;a onclick=&quot;$.table.importTemplate()&quot; class=&quot;btn btn-default btn-xs&quot;&gt;&lt;i class=&quot;fa fa-file-excel-o&quot;&gt;&lt;/i&gt; 下载模板&lt;/a&gt;
+		&lt;/div&gt;
+		&lt;font color=&quot;red&quot; class=&quot;pull-left mt10&quot;&gt;
+			提示：仅允许导入“xls”或“xlsx”格式文件！
+		&lt;/font&gt;
+	&lt;/div&gt;
+&lt;/form&gt;
+&lt;/script&gt;
+</code></pre>
+<p>4、在实体变量上添加@Excel注解，默认为导出导入，也可以单独设置仅导入Type.IMPORT</p>
+<pre><code class="language-java">@Excel(name = &quot;用户序号&quot;)
+private Long id;
+
+@Excel(name = &quot;部门编号&quot;, type = Type.IMPORT)
+private Long deptId;
+
+@Excel(name = &quot;用户名称&quot;)
+private String userName;
+
+/** 导出部门多个对象 */
+@Excels({
+	@Excel(name = &quot;部门名称&quot;, targetAttr = &quot;deptName&quot;, type = Type.EXPORT),
+	@Excel(name = &quot;部门负责人&quot;, targetAttr = &quot;leader&quot;, type = Type.EXPORT)
+})
+private SysDept dept;
+
+/** 导出部门单个对象 */
+@Excel(name = &quot;部门名称&quot;, targetAttr = &quot;deptName&quot;, type = Type.EXPORT)
+private SysDept dept;
+</code></pre>
+<p>5、在Controller添加导入方法，updateSupport属性为是否存在则覆盖（可选）</p>
+<pre><code class="language-java">@PostMapping(&quot;/importData&quot;)
+@ResponseBody
+public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
+{
+	ExcelUtil&lt;SysUser&gt; util = new ExcelUtil&lt;SysUser&gt;(SysUser.class);
+	List&lt;SysUser&gt; userList = util.importExcel(file.getInputStream());
+	String operName = ShiroUtils.getSysUser().getLoginName();
+	String message = userService.importUser(userList, updateSupport, operName);
+	return AjaxResult.success(message);
+}
+</code></pre>
+<p>提示</p>
+<p>也可以直接到main运行此方法测试。</p>
+<pre><code class="language-java">InputStream is = new FileInputStream(new File(&quot;D:\\test.xlsx&quot;));
+ExcelUtil&lt;Entity&gt; util = new ExcelUtil&lt;Entity&gt;(Entity.class);
+List&lt;Entity&gt; userList = util.importExcel(is);
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[springboot全局异常处理]]></title>
+        <id>https://jayhablog.vercel.app/springboot-quan-ju-yi-chang-chu-li/</id>
+        <link href="https://jayhablog.vercel.app/springboot-quan-ju-yi-chang-chu-li/">
+        </link>
+        <updated>2020-11-20T08:16:53.000Z</updated>
+        <content type="html"><![CDATA[<p>转自ruoyi开发文档</p>
+<h2 id="异常处理">异常处理</h2>
+<p>通常一个web框架中，有大量需要处理的异常。比如业务异常，权限不足等等。前端通过弹出提示信息的方式告诉用户出了什么错误。 通常情况下我们用try.....catch.... 对异常进行捕捉处理，但是在实际项目中对业务模块进行异常捕捉，会造成代码重复和繁杂， 我们希望代码中只有业务相关的操作，所有的异常我们单独设立一个类来处理它。全局异常就是对框架所有异常进行统一管理。 我们在可能发生异常的方法里throw抛给控制器。然后由全局异常处理器对异常进行统一处理。 如此，我们的<code>Controller</code>中的方法就可以很简洁了。</p>
+<p>所谓全局异常处理器就是使用<code>@ControllerAdvice</code>注解。示例如下：</p>
+<p>1、统一返回实体定义</p>
+<pre><code class="language-java">package com.ruoyi.common.core.domain;
+
+import java.util.HashMap;
+
+/**
+ * 操作消息提醒
+ * 
+ * @author ruoyi
+ */
+public class AjaxResult extends HashMap&lt;String, Object&gt;
+{
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 返回错误消息
+     * 
+     * @param code 错误码
+     * @param msg 内容
+     * @return 错误消息
+     */
+    public static AjaxResult error(String msg)
+    {
+        AjaxResult json = new AjaxResult();
+        json.put(&quot;msg&quot;, msg);
+        json.put(&quot;code&quot;, 500);
+        return json;
+    }
+
+    /**
+     * 返回成功消息
+     * 
+     * @param msg 内容
+     * @return 成功消息
+     */
+    public static AjaxResult success(String msg)
+    {
+        AjaxResult json = new AjaxResult();
+        json.put(&quot;msg&quot;, msg);
+        json.put(&quot;code&quot;, 0);
+        return json;
+    }
+}
+</code></pre>
+<p>2、定义登录异常定义</p>
+<pre><code class="language-java">package com.ruoyi.common.exception;
+
+/**
+ * 登录异常
+ * 
+ * @author ruoyi
+ */
+public class LoginException extends RuntimeException
+{
+    private static final long serialVersionUID = 1L;
+
+    protected final String message;
+
+    public LoginException(String message)
+    {
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return message;
+    }
+}
+</code></pre>
+<p>3、基于@ControllerAdvice注解的Controller层的全局异常统一处理</p>
+<pre><code class="language-java">package com.ruoyi.framework.web.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.exception.LoginException;
+
+/**
+ * 全局异常处理器
+ * 
+ * @author ruoyi
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler
+{
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	
+	/**
+     * 登录异常
+     */
+    @ExceptionHandler(LoginException.class)
+    public AjaxResult loginException(LoginException e)
+    {
+        log.error(e.getMessage(), e);
+        return AjaxResult.error(e.getMessage());
+    }
+}
+</code></pre>
+<p>4、测试访问请求</p>
+<pre><code class="language-java">@Controller
+public class SysIndexController 
+{
+    /**
+     * 首页方法
+     */
+    @GetMapping(&quot;/index&quot;)
+    public String index(ModelMap mmap)
+    {
+        /**
+         * 模拟用户未登录，抛出业务逻辑异常
+         */
+        SysUser user = ShiroUtils.getSysUser();
+        if (StringUtils.isNull(user))
+		{
+            throw new LoginException(&quot;用户未登录，无法访问请求。&quot;);
+        }
+		mmap.put(&quot;user&quot;, user);
+        return &quot;index&quot;;
+    }
+}
+</code></pre>
+<p>根据上面代码含义，当我们未登录访问/index时就会发生LoginException业务逻辑异常，按照我们之前的全局异常配置以及统一返回实体实例化，访问后会出现AjaxResult格式JSON数据， 下面我们运行项目访问查看效果。<br>
+界面输出内容如下所示：</p>
+<pre><code class="language-json">{
+    &quot;msg&quot;: &quot;用户未登录，无法访问请求。&quot;,
+    &quot;code&quot;: 500
+}
+</code></pre>
+<p><code>对于一些特殊情况，如接口需要返回json，页面请求返回html可以使用如下方法</code>：</p>
+<pre><code class="language-java">@ExceptionHandler(LoginException.class)
+public Object loginException(HttpServletRequest request, LoginException e)
+{
+	log.error(e.getMessage(), e);
+
+	if (ServletUtils.isAjaxRequest(request))
+	{
+		return AjaxResult.error(e.getMessage());
+	}
+	else
+	{
+		return new ModelAndView(&quot;/error/500&quot;);
+	}
+}
+</code></pre>
+<p>若依系统的全局异常处理器<code>GlobalExceptionHandler</code><br>
+注意：如果全部异常处理返回<code>json</code>，那么可以使用<code>@RestControllerAdvice</code>代替<code>@ControllerAdvice</code>，这样在方法上就可以不需要添加<code>@ResponseBody</code>。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[算法归纳]]></title>
         <id>https://jayhablog.vercel.app/kuai-man-zhi-zhen/</id>

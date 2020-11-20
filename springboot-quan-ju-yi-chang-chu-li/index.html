@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>springboot全局异常处理 | Jayha小罗的秘密基地</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1605860301374">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="转自ruoyi开发文档
+异常处理
+通常一个web框架中，有大量需要处理的异常。比如业务异常，权限不足等等。前端通过弹出提示信息的方式告诉用户出了什么错误。 通常情况下我们用try.....catch.... 对异常进行捕捉处理，但是在实际项..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1605860301374" class="site-logo">
+        <h1 class="site-title">Jayha小罗的秘密基地</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">springboot全局异常处理</h2>
+            <div class="post-date">2020-11-20</div>
+            
+            <div class="post-content" v-pre>
+              <p>转自ruoyi开发文档</p>
+<h2 id="异常处理">异常处理</h2>
+<p>通常一个web框架中，有大量需要处理的异常。比如业务异常，权限不足等等。前端通过弹出提示信息的方式告诉用户出了什么错误。 通常情况下我们用try.....catch.... 对异常进行捕捉处理，但是在实际项目中对业务模块进行异常捕捉，会造成代码重复和繁杂， 我们希望代码中只有业务相关的操作，所有的异常我们单独设立一个类来处理它。全局异常就是对框架所有异常进行统一管理。 我们在可能发生异常的方法里throw抛给控制器。然后由全局异常处理器对异常进行统一处理。 如此，我们的<code>Controller</code>中的方法就可以很简洁了。</p>
+<p>所谓全局异常处理器就是使用<code>@ControllerAdvice</code>注解。示例如下：</p>
+<p>1、统一返回实体定义</p>
+<pre><code class="language-java">package com.ruoyi.common.core.domain;
+
+import java.util.HashMap;
+
+/**
+ * 操作消息提醒
+ * 
+ * @author ruoyi
+ */
+public class AjaxResult extends HashMap&lt;String, Object&gt;
+{
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 返回错误消息
+     * 
+     * @param code 错误码
+     * @param msg 内容
+     * @return 错误消息
+     */
+    public static AjaxResult error(String msg)
+    {
+        AjaxResult json = new AjaxResult();
+        json.put(&quot;msg&quot;, msg);
+        json.put(&quot;code&quot;, 500);
+        return json;
+    }
+
+    /**
+     * 返回成功消息
+     * 
+     * @param msg 内容
+     * @return 成功消息
+     */
+    public static AjaxResult success(String msg)
+    {
+        AjaxResult json = new AjaxResult();
+        json.put(&quot;msg&quot;, msg);
+        json.put(&quot;code&quot;, 0);
+        return json;
+    }
+}
+</code></pre>
+<p>2、定义登录异常定义</p>
+<pre><code class="language-java">package com.ruoyi.common.exception;
+
+/**
+ * 登录异常
+ * 
+ * @author ruoyi
+ */
+public class LoginException extends RuntimeException
+{
+    private static final long serialVersionUID = 1L;
+
+    protected final String message;
+
+    public LoginException(String message)
+    {
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage()
+    {
+        return message;
+    }
+}
+</code></pre>
+<p>3、基于@ControllerAdvice注解的Controller层的全局异常统一处理</p>
+<pre><code class="language-java">package com.ruoyi.framework.web.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.exception.LoginException;
+
+/**
+ * 全局异常处理器
+ * 
+ * @author ruoyi
+ */
+@RestControllerAdvice
+public class GlobalExceptionHandler
+{
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	
+	/**
+     * 登录异常
+     */
+    @ExceptionHandler(LoginException.class)
+    public AjaxResult loginException(LoginException e)
+    {
+        log.error(e.getMessage(), e);
+        return AjaxResult.error(e.getMessage());
+    }
+}
+</code></pre>
+<p>4、测试访问请求</p>
+<pre><code class="language-java">@Controller
+public class SysIndexController 
+{
+    /**
+     * 首页方法
+     */
+    @GetMapping(&quot;/index&quot;)
+    public String index(ModelMap mmap)
+    {
+        /**
+         * 模拟用户未登录，抛出业务逻辑异常
+         */
+        SysUser user = ShiroUtils.getSysUser();
+        if (StringUtils.isNull(user))
+		{
+            throw new LoginException(&quot;用户未登录，无法访问请求。&quot;);
+        }
+		mmap.put(&quot;user&quot;, user);
+        return &quot;index&quot;;
+    }
+}
+</code></pre>
+<p>根据上面代码含义，当我们未登录访问/index时就会发生LoginException业务逻辑异常，按照我们之前的全局异常配置以及统一返回实体实例化，访问后会出现AjaxResult格式JSON数据， 下面我们运行项目访问查看效果。<br>
+界面输出内容如下所示：</p>
+<pre><code class="language-json">{
+    &quot;msg&quot;: &quot;用户未登录，无法访问请求。&quot;,
+    &quot;code&quot;: 500
+}
+</code></pre>
+<p><code>对于一些特殊情况，如接口需要返回json，页面请求返回html可以使用如下方法</code>：</p>
+<pre><code class="language-java">@ExceptionHandler(LoginException.class)
+public Object loginException(HttpServletRequest request, LoginException e)
+{
+	log.error(e.getMessage(), e);
+
+	if (ServletUtils.isAjaxRequest(request))
+	{
+		return AjaxResult.error(e.getMessage());
+	}
+	else
+	{
+		return new ModelAndView(&quot;/error/500&quot;);
+	}
+}
+</code></pre>
+<p>若依系统的全局异常处理器<code>GlobalExceptionHandler</code><br>
+注意：如果全部异常处理返回<code>json</code>，那么可以使用<code>@RestControllerAdvice</code>代替<code>@ControllerAdvice</code>，这样在方法上就可以不需要添加<code>@ResponseBody</code>。</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/kuai-man-zhi-zhen/">
+                  <h3 class="post-title">
+                    算法归纳
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
