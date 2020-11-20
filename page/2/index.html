@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>简易快速springboot整合mybats步骤 | Jayha小罗的秘密基地</title>
+<title>Jayha小罗的秘密基地</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -20,13 +20,7 @@
 
 
 
-    <meta name="description" content="
-`mybatis整合
-导入包不用说
-在主运行类上 加上这个注解，表示给这个包都加上mapper注解
-在yaml文件上配置mybatis配置
-@MapperScan(basePackages ={&quot;cn.gdouJayha.spr..." />
-    <meta name="keywords" content="" />
+    <meta name="description" content="欢迎来到Jayha小罗的Blog嘻嘻嘻：）">
   </head>
   <body>
     <div id="app" class="main">
@@ -92,64 +86,34 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <div class="post-detail">
-            <h2 class="post-title">简易快速springboot整合mybats步骤</h2>
-            <div class="post-date">2020-08-03</div>
-            
-              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/springboot-zheng-he-mybats-jian-yi.jpg')">
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://jayhablog.vercel.app/springboot-zheng-he-mybats-jian-yi/">
+                  <h2 class="post-title">简易快速springboot整合mybats步骤</h2>
+                </a>
+                <div class="post-date">
+                  2020-08-03
+                </div>
+                <div class="post-abstract">
+                  
+                </div>
               </div>
-            
-            <div class="post-content" v-pre>
-              <h2 id=""></h2>
-<p>`mybatis整合</p>
-<p>导入包不用说</p>
-<p>在主运行类上 加上这个注解，表示给这个包都加上mapper注解</p>
-<p>在yaml文件上配置mybatis配置</p>
-<pre><code class="language-java">@MapperScan(basePackages ={&quot;cn.gdouJayha.springbootApplication.dao&quot;})
-</code></pre>
-<pre><code class="language-yaml">mybatis:
-  #起别名
-  type-aliases-package: cn.gdouJayha.springbootapplication.domain
-  #映射位置
-  mapper-locations: classpath:mybatis/mapper/*.xml
+              
+                <a class="right" href="https://jayhablog.vercel.app/springboot-zheng-he-mybats-jian-yi/">
+                  <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/springboot-zheng-he-mybats-jian-yi.jpg')">
+                  </div>
+                </a>
+              
+            </article>
+          
+
+          <div class="pagination-container">
   
-  check-config-location: true
-  #主配置xml位置
-  config-location: classpath:mybatis/SqlMapConfig.xml
-</code></pre>
-<h2 id="-2"></h2>
-<p>更改pom.xml</p>
-<pre><code class="language-xml">&lt;plugins&gt;
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-        &lt;resources&gt;
-            &lt;resource&gt;
-                &lt;directory&gt;src/main/resources&lt;/directory&gt;
-                &lt;!-- src/main/resources下的指定资源放行 --&gt;
-                &lt;includes&gt;
-                    &lt;include&gt;**/*.*&lt;/include&gt;
-                &lt;/includes&gt;
-                &lt;filtering&gt;false&lt;/filtering&gt;
-            &lt;/resource&gt;
-        &lt;/resources&gt;
-    &lt;/build&gt;
-</code></pre>
-<p>如果需要用到事务尽量用<br>
-@EnableTransactionManagement开启事务</p>
-<pre><code class="language-java">@Transactional
-</code></pre>
-<p>该注解放在方法上开启事务</p>
-
-            </div>
-            
-            
-
-            
-
-          </div>
+    <a href="https://jayhablog.vercel.app/" class="prev"><i class="icon-arrow-ios-back-outline"></i> 上一页</a>
+  
+  
+</div>
 
         </div>
       </div>
