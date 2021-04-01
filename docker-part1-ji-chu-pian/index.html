@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>docker part1 基础篇 | Jayha小罗的秘密基地</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1617254056620">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="
+
+
+
+概念
+说明
+
+
+
+
+Docker 镜像(Images)
+Docker 镜像是用于创建 Docker 容器的模板，比如 Ubuntu 系统。
+
+
+Docker 容器(Container)
+容器是独立运行的一个或一组应用，是镜像运行时的..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1617254056620" class="site-logo">
+        <h1 class="site-title">Jayha小罗的秘密基地</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">docker part1 基础篇</h2>
+            <div class="post-date">2021-04-01</div>
+            
+              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/docker-part1-ji-chu-pian.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p><img src="https://jayhablog.vercel.app/post-images/1617254006024.png" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C576507-docker1.png" alt="" loading="lazy"></p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker 镜像(Images)</td>
+<td>Docker 镜像是用于创建 Docker 容器的模板，比如 Ubuntu 系统。</td>
+</tr>
+<tr>
+<td>Docker 容器(Container)</td>
+<td>容器是独立运行的一个或一组应用，是镜像运行时的实体。</td>
+</tr>
+<tr>
+<td>Docker 客户端(Client)</td>
+<td>Docker 客户端通过命令行或者其他工具使用 Docker SDK (https://docs.docker.com/develop/sdk/) 与 Docker 的守护进程通信。</td>
+</tr>
+<tr>
+<td>Docker 主机(Host)</td>
+<td>一个物理或者虚拟的机器用于执行 Docker  守护进程和容器。</td>
+</tr>
+<tr>
+<td>Docker Registry</td>
+<td>Docker 仓库用来保存镜像，可以理解为代码控制中的代码仓库。 Docker Hub(https://hub.docker.com) 提供了庞大的镜像集合供使用。  一个 Docker Registry 中可以包含多个仓库（Repository）；每个仓库可以包含多个标签（Tag）；每个标签对应一个镜像。 通常，一个仓库会包含同一个软件不同版本的镜像，而标签就常用于对应该软件的各个版本。我们可以通过 &lt;仓库名&gt;:&lt;标签&gt; 的格式来指定具体是这个软件哪个版本的镜像。如果不给出标签，将以 <strong>latest</strong> 作为默认标签。</td>
+</tr>
+<tr>
+<td>Docker Machine</td>
+<td>Docker Machine是一个简化Docker安装的命令行工具，通过一个简单的命令行即可在相应的平台上安装Docker，比如VirtualBox、 Digital Ocean、Microsoft Azure。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Docker是什么工作的?</strong><br>
+Docker是一个Client-Server结构的系统，Docker的守护进程运行在主机上。通过<code>Socket</code>从客户端访问! DockerServer接收到 Docker-Client的指令，就会执行这个命令!</p>
+<p>docker支持$() 的标记语法 如</p>
+<pre><code class="language-shell">docker rm $(docker ps -aq)
+</code></pre>
+<p>ctrl+p+q 容器不停止退出交互模式</p>
+<p>常用命令 查询 https://mp.weixin.qq.com/s/vBsTkAGmwInbLT18qOUZBw</p>
+<h2 id="docker镜像加载原理"><strong>Docker镜像加载原理</strong></h2>
+<p>docker的镜像实际上由一层一层的文件系统组成，这种展级的文件系统UnionFS.<br>
+bootfs(boot file system)主要包含bootloader和kernel,bootloader主要是引导加载kernel,Linux刚启动时会加载bootfs文件系统，在Docker镜像的最底层是bootfs。这一层与我们典型的Linux/Unix系统是一样的，包含boot加载器和内核。当boot加载完成之后整个内核就都在内存中了，此时内存的使用权已由bootfs转交给内核，此时系统也会卸载bootfs,<br>
+rootfs (root fle system)，在bootfs之上。包含的就是典型Linux系统中的/dev/proc/bin,/etc 等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Ubuntu，Centos等等。</p>
+<blockquote>
+<p>平时我们安装进虚拟机的CentOS都是好几个G，为什么Docker这里才200M?</p>
+</blockquote>
+<p>对于一个精简的Os，rootfs可以很小，只需要包含最基本的命令，工具和程序库就可以了，因为底层直接用Host的kernel，自己只需要提供rootfs就可以了。由此可见对于不同的linux发行版bootfs基本是一致的rootfs会有差别,因此不同的发行版可以公用 bootfs.</p>
+<p><img src="https://jayhablog.vercel.app/post-images/1617253972074.png" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C20200320105107961.png" alt="" loading="lazy"></p>
+<h4 id="换一个方法来说"><strong>换一个方法来说</strong></h4>
+<p>Docker 镜像由一些松耦合的只读镜像层组成。</p>
+<p>Docker 负责堆叠这些镜像层，并且将它们表示为单个统一的对象。</p>
+<p>查看镜像分层的方式可以通过 docker image inspect 命令。下面同样以 ubuntu:latest 镜像为例。</p>
+<p>所有的 Docker 镜像都起始于一个基础镜像层，当进行修改或增加新的内容时，就会在当前镜像层之上，创建新的镜像层。</p>
+<p>举一个简单的例子，假如基于 Ubuntu Linux 16.04 创建一个新的镜像，这就是新镜像的第一层；如果在该镜像中添加python 包，就会在基础镜像层之上创建第二个镜像层；如果继续添加一个安全补丁，就会创建第三个镜像层。</p>
+<p>该镜像当前已经包含 3 个镜像层，如下图所示（这只是一个用于演示的很简单的例子）。</p>
+<p><img src="https://jayhablog.vercel.app/post-images/1617253896321.gif" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C4-1Z416164115364.gif" alt="" loading="lazy"></p>
+<p><strong><code>多个镜像之间可以并且确实会共享镜像层。这样可以有效节省空间并提升性能</code></strong>。</p>
+<p>在添加额外的镜像层的同时，镜像始终保持是当前所有镜像的组合，理解这一点非常重要。下图中举了一个简单的例子，每个镜像层包含 3 个文件，而镜像包含了来自两个镜像层的 6 个文件。</p>
+<p><img src="https://jayhablog.vercel.app/post-images/1617253822923.gif" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C4-1Z41616413R94.gif" alt="" loading="lazy"></p>
+<p>上图中的镜像层跟之前图中的略有区别，主要目的是便于展示文件。</p>
+<p>下图中展示了一个稍微复杂的三层镜像，在外部看来整个镜像只有 6 个文件，这是因为最上层中的文件 7 是文件 5 的一个更新版本。</p>
+<p><img src="https://jayhablog.vercel.app/post-images/1617253858775.gif" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C4-1Z416164203H1.gif" alt="" loading="lazy"></p>
+<p>这种情况下，上层镜像层中的文件覆盖了底层镜像层中的文件。这样就使得文件的更新版本作为一个新镜像层添加到镜像当中。</p>
+<p>Docker 通过存储引擎（新版本采用快照机制）的方式来实现镜像层堆栈，并保证多镜像层对外展示为统一的文件系统。</p>
+<p>Linux 上可用的存储引擎有 AUFS、Overlay2、Device Mapper、Btrfs 以及 ZFS。顾名思义，每种存储引擎都基于 Linux 中对应的文件系统或者块设备技术，并且每种存储引擎都有其独有的性能特点。</p>
+<p>Docker 在 Windows 上仅支持 windowsfilter 一种存储引擎，该引擎基于 NTFS 文件系统之上实现了分层和 CoW[1]。</p>
+<p>下图展示了与系统显示相同的三层镜像。所有镜像层堆叠并合并，对外提供统一的视图。</p>
+<figure data-type="image" tabindex="1"><img src="http://c.biancheng.net/uploads/allimg/190416/4-1Z4161642301E.gif" alt="从系统角度看三层镜像" loading="lazy"></figure>
+<p>回顾一下之前用于拉取 nigelpoulton/tu-demo 仓库下全部包含标签的 docker image pull 命令（包含 -a 参数）。</p>
+<pre><code class="language-bash">$ docker image pull -a nigelpoulton/tu-demo
+ 
+ latest: Pulling from nigelpoulton/tu-demo
+ 237d5fcd25cf: Pull complete
+ a3ed95caeb02: Pull complete
+ &lt;Snip&gt;
+ Digest: sha256:42e34e546cee61adb100...a0c5b53f324a9e1c1aae451e9
+ 
+ v1: Pulling from nigelpoulton/tu-demo
+ 237d5fcd25cf: Already exists
+ a3ed95caeb02: Already exists
+ &lt;Snip&gt;
+ Digest: sha256:9ccc0c67e5c5eaae4beb...24c1d5c80f2c9623cbcc9b59a
+ 
+ v2: Pulling from nigelpoulton/tu-demo
+ 237d5fcd25cf: Already exists
+ a3ed95caeb02: Already exists
+ &lt;Snip&gt;
+ eab5aaac65de: Pull complete
+ Digest: sha256:d3c0d8c9d5719d31b79c...fef58a7e038cf0ef2ba5eb74c
+ 
+ Status: Downloaded newer image for nigelpoulton/tu-demo
+ 
+ $ docker image ls
+ REPOSITORY TAG IMAGE ID CREATED SIZE
+ nigelpoulton/tu-demo v2 6ac...ead 4 months ago 211.6 MB
+ nigelpoulton/tu-demo latest 9b9...e29 4 months ago 211.6 MB
+ nigelpoulton/tu-demo v1 9b9...e29 4 months ago 211.6 MB
+</code></pre>
+<p>注意那些以 Already exists 结尾的行。</p>
+<p>由这几行可见，Docker 很聪明，可以识别出要拉取的镜像中，哪几层已经在本地存在。</p>
+<p>在本例中，Docker 首先尝试拉取标签为 latest 的镜像。然后，当拉取标签为 v1 和 v2 的镜像时，Docker 注意到组成这两个镜像的镜像层，有一部分已经存在了。出现这种情况的原因是前面 3 个镜像相似度很高，所以共享了很多镜像层。</p>
+<p>如前所述，Docker 在 Linux 上支持很多存储引擎（Snapshotter）。每个存储引擎都有自己的镜像分层、镜像层共享以及写时复制（CoW）技术的具体实现。</p>
+<h2 id="容器和虚拟机">容器和虚拟机</h2>
+<p>容器和虚拟机都依赖于宿主机才能运行。宿主机可以是笔记本，是数据中心的物理服务器，也可以是公有云的某个实例。</p>
+<p>在下面的示例中，假设宿主机是一台需要运行 4 个业务应用的物理服务器。</p>
+<p>在虚拟机模型中，首先要开启物理机并启动 Hypervisor 引导程序。一旦 Hypervisor 启动，就会占有机器上的全部物理资源，如 CPU、RAM、存储和 NIC。</p>
+<p>Hypervisor 接下来就会将这些物理资源划分为虚拟资源，并且看起来与真实物理资源完全一致。</p>
+<p>然后 Hypervisor 会将这些资源打包进一个叫作虚拟机（VM）的软件结构当中。这样用户就可以使用这些虚拟机，并在其中安装操作系统和应用。</p>
+<p>前面提到需要在物理机上运行 4 个应用，所以在 Hypervisor 之上需要创建 4 个虚拟机并安装 4 个操作系统，然后安装 4 个应用。当操作完成后，结构如下图所示。</p>
+<figure data-type="image" tabindex="2"><img src="http://c.biancheng.net/uploads/allimg/190417/4-1Z41G01336346.gif" alt="运行4个业务应用的物理服务器" loading="lazy"></figure>
+<p>而容器模型则略有不同。</p>
+<p>服务器启动之后，所选择的操作系统会启动。在 Docker 世界中可以选择 Linux，或者内核支持内核中的容器原语的新版本 Windows。</p>
+<p>与虚拟机模型相同，OS 也占用了全部硬件资源。在 OS 层之上，需要安装容器引擎（如 Docker）。</p>
+<p>容器引擎可以获取系统资源，比如进程树、文件系统以及网络栈，接着将资源分割为安全的互相隔离的资源结构，称之为容器。</p>
+<p>每个容器看起来就像一个真实的操作系统，在其内部可以运行应用。按照前面的假设，需要在物理机上运行 4 个应用。</p>
+<p>因此，需要划分出 4 个容器并在每个容器中运行一个应用，如下图所示。</p>
+<figure data-type="image" tabindex="3"><img src="http://c.biancheng.net/uploads/allimg/190417/4-1Z41G01424234.gif" alt="划分4个容器" loading="lazy"></figure>
+<p>从更高层面上来讲，Hypervisor 是硬件虚拟化（Hardware Virtualization）——Hypervisor 将硬件物理资源划分为虚拟资源。</p>
+<p>容器是操作系统虚拟化（OS Virtualization）——容器将系统资源划分为虚拟资源。</p>
+<h2 id="虚拟机的额外开销">虚拟机的额外开销</h2>
+<p>基于前文所述内容，接下来会着重探讨 Hypervisor 模型的一个主要问题。</p>
+<p>首先我们的目标是在一台物理机上运行 4 个业务相关应用。每种模型示例中都安装了一个操作系统或者 Hypervisor（一种针对虚拟机高度优化后的操作系统）。</p>
+<p>虚拟机模型将底层硬件资源划分到虚拟机当中。每个虚拟机都是包含了虚拟 CPU、虚拟 RAM、虚拟磁盘等资源的一种软件结构。</p>
+<p>因此，每个虚拟机都需要有自己的操作系统来声明、初始化并管理这些虚拟资源。</p>
+<p>但是，操作系统本身是有其额外开销的。例如，每个操作系统都消耗一点 CPU、一点 RAM、一点存储空间等。</p>
+<p>每个操作系统都需要独立的许可证，并且都需要打补丁升级，每个操作系统也都面临被攻击的风险。</p>
+<p>通常将这种现象称作 OS Tax 或者 VM Tax，每个操作系统都占用一定的资源。</p>
+<p>容器模型具有在宿主机操作系统中运行的单个内核。在一台主机上运行数十个甚至数百个容器都是可能的——容器共享一个操作系统/内核。</p>
+<p>这意味着只有一个操作系统消耗 CPU、RAM 和存储资源，只有一个操作系统需要授权，只有一个操作系统需要升级和打补丁。同时，只有一个操作系统面临被攻击的风险。简言之，就是只有一份 OS 损耗。</p>
+<p>在上述单台机器上只需要运行 4 个业务应用的场景中，也许问题尚不明显。但当需要运行成百上千应用的时候，就会引起质的变化。</p>
+<p>另一个值得考虑的事情是启动时间。因为容器并不是完整的操作系统，所以其启动要远比虚拟机快。</p>
+<p>切记，在容器内部并不需要内核，也就没有定位、解压以及初始化的过程——更不用提在内核启动过程中对硬件的遍历和初始化了。</p>
+<p>这些在容器启动的过程中统统都不需要！唯一需要的是位于下层操作系统的共享内核是启动了的！最终结果就是，容器可以在 1s 内启动。唯一对容器启动时间有影响的就是容器内应用启动所花费的时间。</p>
+<p>这就是容器模型要比虚拟机模型简洁并且高效的原因了。使用容器可以在更少的资源上运行更多的应用，启动更快，并且支付更少的授权和管理费用，同时面对未知攻击的风险也更小。</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/geng-you-ya-de-xie-jie-kou-zhuan/">
+                  <h3 class="post-title">
+                    更优雅的写接口（转）
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
