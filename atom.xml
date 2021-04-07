@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2021-04-07T05:33:32.165Z</updated>
+    <updated>2021-04-07T05:51:42.400Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -16,7 +16,10 @@
         <link href="https://jayhablog.vercel.app/docker-part1-ji-chu-pian/">
         </link>
         <updated>2021-04-01T05:08:27.000Z</updated>
-        <content type="html"><![CDATA[<p><img src="https://jayhablog.vercel.app/post-images/1617254006024.png" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C576507-docker1.png" alt="" loading="lazy"></p>
+        <content type="html"><![CDATA[<p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中,然后发布到任何流行的Linux机器或Windows 机器上,也可以实现虚拟化,容器是完全使用沙箱机制,相互之间不会有任何接口。<br>
+官网为：https://www.docker.com/<br>
+本博客旨在本人整理笔记，顺带介绍docker的基础知识。</p>
+<p><img src="https://jayhablog.vercel.app/post-images/1617254006024.png" alt="" loading="lazy"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C576507-docker1.png" alt="" loading="lazy"></p>
 <table>
 <thead>
 <tr>
