@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>Ribbon | Jayha小罗的秘密基地</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1618837392896">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content=" &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;s..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1618837392896" class="site-logo">
+        <h1 class="site-title">Jayha小罗的秘密基地</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">Ribbon</h2>
+            <div class="post-date">2021-04-19</div>
+            
+              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/ribbon.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <pre><code class="language-xml"> &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<pre><code class="language-java">@Bean
+@LoadBalanced  //开启restTemplate负载均衡
+public RestTemplate restTemplate(){
+    return new RestTemplate();
+}
+</code></pre>
+<p>Spring Cloud Ribbon是基于Netflix Ribbon实现的一套客户端负载均衡的工具。</p>
+<p>简单的说，Ribbon是Netflix发布的开源项目，主要功能是提供客户端的软件负载均衡算法和服务调用。Ribbon客户端组件提供一系列完善的配置项如连接超时，重试等。</p>
+<p>简单的说，就是在配置文件中列出Load Balancer(简称LB)后面所有的机器，Ribbon会自动的帮助你基于某种规则(如简单轮询，随机连接等）去连接这些机器。我们很容易使用Ribbon实现自定义的负载均衡算法。</p>
+<p><strong>Ribbon未来可能被Spring Cloud LoadBalacer替代。</strong></p>
+<hr>
+<h4 id="ribbon本地负载均衡客户端vs-nginx服务端负载均衡区别">Ribbon本地负载均衡客户端VS Nginx服务端负载均衡区别</h4>
+<p>Nginx是服务器负载均衡，客户端所有请求都会交给nginx，然后由nginx实现转发请求。即负载均衡是由服务端实现的。<br>
+Ribbon本地负载均衡，在调用微服务接口时候，会在注册中心上获取注册信息服务列表之后缓存到JVM本地，从而在本地实现RPC远程服务调用技术。</p>
+<p>集中式LB</p>
+<p>即在服务的消费方和提供方之间使用独立的LB设施(可以是硬件，如F5, 也可以是软件，如nginx)，由该设施负责把访问请求通过某种策略转发至服务的提供方;</p>
+<p>进程内LB</p>
+<p>将LB逻辑集成到消费方，消费方从服务注册中心获知有哪些地址可用，然后自己再从这些地址中选择出一个合适的服务器。</p>
+<p>Ribbon就属于进程内LB，它只是一个类库，集成于消费方进程，消费方通过它来获取到服务提供方的地址。</p>
+<p>一句话</p>
+<p><strong>负载均衡 + RestTemplate调用</strong></p>
+<hr>
+<h3 id="ribbon默认自带的负载规则">Ribbon默认自带的负载规则</h3>
+<p>lRule：根据特定算法中从服务列表中选取一个要访问的服务</p>
+<figure data-type="image" tabindex="1"><img src="https://jayhablog.vercel.app/post-images/1618835677071.png" alt="" loading="lazy"></figure>
+<pre><code>RoundRobinRule 轮询
+RandomRule 随机
+RetryRule 先按照RoundRobinRule的策略获取服务，如果获取服务失败则在指定时间内会进行重
+WeightedResponseTimeRule 对RoundRobinRule的扩展，响应速度越快的实例选择权重越大，越容易被选择
+BestAvailableRule 会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量最小的服务
+AvailabilityFilteringRule 先过滤掉故障实例，再选择并发较小的实例
+ZoneAvoidanceRule 默认规则,复合判断server所在区域的性能和server的可用性选择服务器</code></pre>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/docker-part1-ji-chu-pian/">
+                  <h3 class="post-title">
+                    docker part1
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
