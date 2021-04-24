@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2021-04-24T14:22:27.449Z</updated>
+    <updated>2021-04-24T14:24:22.512Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -10,51 +10,6 @@
     <logo>https://jayhablog.vercel.app/images/avatar.png</logo>
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
     <rights>All rights reserved 2021, Jayha小罗的秘密基地</rights>
-    <entry>
-        <title type="html"><![CDATA[Ribbon小结]]></title>
-        <id>https://jayhablog.vercel.app/ribbon-xiao-jie/</id>
-        <link href="https://jayhablog.vercel.app/ribbon-xiao-jie/">
-        </link>
-        <updated>2021-04-24T14:18:32.000Z</updated>
-        <content type="html"><![CDATA[<pre><code class="language-xml"> &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-cloud-starter-netflix-ribbon&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-</code></pre>
-<pre><code class="language-java">@Bean
-@LoadBalanced  //开启restTemplate负载均衡
-public RestTemplate restTemplate(){
-    return new RestTemplate();
-}
-</code></pre>
-<p>Spring Cloud Ribbon是基于Netflix Ribbon实现的一套客户端负载均衡的工具。</p>
-<p>简单的说，Ribbon是Netflix发布的开源项目，主要功能是提供客户端的软件负载均衡算法和服务调用。Ribbon客户端组件提供一系列完善的配置项如连接超时，重试等。</p>
-<p>简单的说，就是在配置文件中列出Load Balancer(简称LB)后面所有的机器，Ribbon会自动的帮助你基于某种规则(如简单轮询，随机连接等）去连接这些机器。我们很容易使用Ribbon实现自定义的负载均衡算法。</p>
-<p><strong>Ribbon未来可能被Spring Cloud LoadBalacer替代。</strong></p>
-<hr>
-<h4 id="ribbon本地负载均衡客户端vs-nginx服务端负载均衡区别">Ribbon本地负载均衡客户端VS Nginx服务端负载均衡区别</h4>
-<p>Nginx是服务器负载均衡，客户端所有请求都会交给nginx，然后由nginx实现转发请求。即负载均衡是由服务端实现的。<br>
-Ribbon本地负载均衡，在调用微服务接口时候，会在注册中心上获取注册信息服务列表之后缓存到JVM本地，从而在本地实现RPC远程服务调用技术。</p>
-<p>集中式LB</p>
-<p>即在服务的消费方和提供方之间使用独立的LB设施(可以是硬件，如F5, 也可以是软件，如nginx)，由该设施负责把访问请求通过某种策略转发至服务的提供方;</p>
-<p>进程内LB</p>
-<p>将LB逻辑集成到消费方，消费方从服务注册中心获知有哪些地址可用，然后自己再从这些地址中选择出一个合适的服务器。</p>
-<p>Ribbon就属于进程内LB，它只是一个类库，集成于消费方进程，消费方通过它来获取到服务提供方的地址。</p>
-<p>一句话</p>
-<p><strong>负载均衡 + RestTemplate调用</strong></p>
-<hr>
-<h3 id="ribbon默认自带的负载规则">Ribbon默认自带的负载规则</h3>
-<p>lRule：根据特定算法中从服务列表中选取一个要访问的服务</p>
-<figure data-type="image" tabindex="1"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5C87243c00c0aaea211819c0d8fc97e445.png" alt="87243c00c0aaea211819c0d8fc97e445" loading="lazy"></figure>
-<pre><code>RoundRobinRule 轮询
-RandomRule 随机
-RetryRule 先按照RoundRobinRule的策略获取服务，如果获取服务失败则在指定时间内会进行重
-WeightedResponseTimeRule 对RoundRobinRule的扩展，响应速度越快的实例选择权重越大，越容易被选择
-BestAvailableRule 会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量最小的服务
-AvailabilityFilteringRule 先过滤掉故障实例，再选择并发较小的实例
-ZoneAvoidanceRule 默认规则,复合判断server所在区域的性能和server的可用性选择服务器</code></pre>
-]]></content>
-    </entry>
     <entry>
         <title type="html"><![CDATA[Hystrix小结]]></title>
         <id>https://jayhablog.vercel.app/hystrix-xiao-jie/</id>
@@ -2076,6 +2031,224 @@ Redis会将一个事务中的所有命令序列化，然后按顺序执行。<br
 解决死锁：<br>
 1）通过Redis中expire()给锁设定最大持有时间，如果超过，则Redis来帮我们释放锁。<br>
 2） 使用 setnx key “当前系统时间+锁持有的时间”和getset key “当前系统时间+锁持有的时间”组合的命令就可以实现</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[spring-security安全认证框架Part1（非OAuth2部分）]]></title>
+        <id>https://jayhablog.vercel.app/spring-security-an-quan-ren-zheng-kuang-jia-1/</id>
+        <link href="https://jayhablog.vercel.app/spring-security-an-quan-ren-zheng-kuang-jia-1/">
+        </link>
+        <updated>2020-09-13T11:09:48.000Z</updated>
+        <content type="html"><![CDATA[<hr>
+<p>spring-security是通过servlet的filter链方式实现的一种认证，授权<br>
+<img src="https://jayhablog.vercel.app/post-images/1599995513270.png" alt="" loading="lazy"><br>
+快速入门（在内存中使用）；</p>
+<p>在内存中的使用非常简单</p>
+<p>阅读代码即可</p>
+<pre><code class="language-java">@Configuration
+@EnableWebSecurity
+public class securityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public UserDetailsService userDetailsService(){
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        return  manager;
+    }
+    /**
+     * 该方法是授权相关方法
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //首页所有人可以访问&quot;/&quot;
+        http.authorizeRequests()
+                .antMatchers(&quot;/&quot;).permitAll()
+                .antMatchers(&quot;/index.html&quot;).permitAll()
+                .antMatchers(&quot;/index&quot;).permitAll()
+                .antMatchers(&quot;/home&quot;).permitAll()
+                .antMatchers(&quot;/welcome&quot;).permitAll()
+                .antMatchers(&quot;/level1/**&quot;).hasRole(&quot;vip1&quot;)
+                .antMatchers(&quot;/level2/**&quot;).hasRole(&quot;vip2&quot;)
+                .antMatchers(&quot;/level3/**&quot;).hasRole(&quot;vip3&quot;)
+        .and().formLogin()//开启自定义页面
+                .loginPage(&quot;/userlogin&quot;).loginProcessingUrl(&quot;/welcome&quot;).usernameParameter(&quot;username&quot;).passwordParameter(&quot;password&quot;).
+                failureHandler((req, resp, exception) -&gt; {
+                    resp.setContentType(&quot;application/json;charset=utf-8&quot;);
+                            PrintWriter out = resp.getWriter();
+                            out.write(&quot;登录失败...&quot;);
+                    out.flush();
+                })
+                .permitAll()
+                .and()
+                .httpBasic()
+                .and()
+                // 关闭CSRF跨域
+                .csrf().disable();
+        ;
+        //没有权限跳到登录页
+        /*http.formLogin();*/
+        //关闭csrf功能
+        //http.csrf().disable();
+        //开启注销 成功跳到“/”
+        http.logout().logoutSuccessUrl(&quot;/&quot;);
+    }
+
+    /**
+     * 该方法是认证相关方法
+     * @param auth
+     * @throws Exception
+     */
+    /*@Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //从内存中读
+        //使用BCrypt加密
+
+        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder())
+                .withUser(&quot;jayha&quot;).password(passwordEncoder().encode(&quot;123456&quot;)).roles(&quot;vip3&quot;,&quot;vip2&quot;)
+                .and()
+                .withUser(&quot;nanha&quot;).password(passwordEncoder().encode(&quot;123456&quot;)).roles(&quot;vip1&quot;);
+
+    }*/
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // 设置拦截忽略url - 会直接过滤该url - 将不会经过Spring Security过滤器链
+        web.ignoring().antMatchers(&quot;/getUserInfo&quot;);
+        // 设置拦截忽略文件夹，可以对静态资源放行
+        web.ignoring().antMatchers(&quot;/css/**&quot;, &quot;/js/**&quot;);
+
+    }
+}
+</code></pre>
+<hr>
+<hr>
+<p>BCryptPasswordEncoder</p>
+<p>是spring提供的一种特殊加密方式，建议数据库以次类方式存储，有静态方法hashpw(实际密码，盐分值[也可由Bcrypt自动生成])</p>
+<pre><code class="language-java">void testBcrypto(){
+        String s1 = BCrypt.hashpw(&quot;sir159357&quot;, BCrypt.gensalt());
+        String s2 = BCrypt.hashpw(&quot;sir159357&quot;, BCrypt.gensalt());
+
+        System.out.println(s1);
+        System.out.println(s2);
+    }
+</code></pre>
+<p>结果</p>
+<pre><code class="language-tex">s1:$2a$10$WH2U/RLezICmMu8cAN2kQ.vWb46UOEtYbHgMeri8bc4JHGtKVGSKy
+
+s2:$2a$10$aLTNf4pFC3OwyEM/r.9aeepuid9efVaLlvdqpNEDO01vPX.17kc0O
+</code></pre>
+<p>所以配置一个名为passwordEncoder的bean 该bean返回的值 就是security的编码方式</p>
+<pre><code class="language-java">@Bean
+    public PasswordEncoder passwordEncoder() {
+        // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
+        return new BCryptPasswordEncoder();
+    }
+</code></pre>
+<p>接下来 我们就可以从内存过渡到数据库了</p>
+<p>回到springsecurity流程图 我们可以发现认证是由一个叫做UserDetailsService的接口进行实现的。我们可以实现这个接口并把ta加入到IOC容器中</p>
+<pre><code class="language-java">@Service
+public class userdetailService implements UserDetailsService {
+
+    @Autowired
+    ItestuserDAO itestuserDAO;
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        testuser one = itestuserDAO.findOneByAccount(s);
+        if(one == null){
+            return null;//不用自己抛出异常 返回NULL spring=security会自动整理
+        }else{
+            UserDetails details = User.withUsername(one.getAccount()).password(one.getPassword()).authorities(&quot;vip1&quot;).build();//withusername方法即把username加入 password同理，authorities则是将用户进行授权操作
+            return details;
+        }
+    }
+}
+</code></pre>
+<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现，现在一般是role（角色）包含auth（权限）这种操作  要注意更改</p>
+<p><s>俺最初没理解好这两个东西的概念在这疯狂踩坑</s></p>
+<pre><code class="language-java">@Override
+    protected void configure(HttpSecurity http) throws Exception {
+        //首页所有人可以访问&quot;/&quot;
+        http.authorizeRequests()
+                .antMatchers(&quot;/&quot;).permitAll()
+                .antMatchers(&quot;/index.html&quot;).permitAll()
+                .antMatchers(&quot;/index&quot;).permitAll()
+                .antMatchers(&quot;/home&quot;).permitAll()
+                .antMatchers(&quot;/welcome&quot;).permitAll()
+                .antMatchers(&quot;/level1/**&quot;).hasAuthority(&quot;vip1&quot;)
+                .antMatchers(&quot;/level2/**&quot;).hasAuthority(&quot;vip2&quot;)
+                .antMatchers(&quot;/level3/**&quot;).hasAuthority(&quot;vip3&quot;)
+                .and()
+                .formLogin()//开启自定义页面
+                .loginPage(&quot;/userlogin&quot;)
+                .loginProcessingUrl(&quot;/welcome&quot;)
+                .usernameParameter(&quot;username&quot;)
+                .passwordParameter(&quot;password&quot;)
+
+                .failureHandler((req, resp, exception) -&gt; {
+                    resp.setContentType(&quot;application/json;charset=utf-8&quot;);
+                            PrintWriter out = resp.getWriter();
+                            out.write(&quot;登录失败...&quot;);
+                    out.flush();
+                }).permitAll()
+                .and()
+                .httpBasic()
+                .and()
+                // 关闭CSRF跨域
+                .csrf().disable().cors();
+        ;
+        http.logout().logoutSuccessUrl(&quot;/&quot;);
+    }
+</code></pre>
+<h5 id="用户登录后获取用户信息">用户登录后获取用户信息</h5>
+<p>可以使用</p>
+<pre><code class="language-java">Authentication authentication =SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+</code></pre>
+<p>principal就是UserDetail对象 可以强转后使用它的各种方法 比如获取姓名：</p>
+<pre><code class="language-java"> @GetMapping(&quot;/getName&quot;)
+    public String getUserAccount(){
+        String account= null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal == null){
+            account = &quot;匿名&quot;;
+        }
+        if(principal instanceof UserDetails){
+            UserDetails u = (UserDetails)principal;
+            account = u.getUsername();
+        }
+        return account;
+    }
+</code></pre>
+<p>数据库的建立 除了用户类外 还要有角色表 与用户表是多对多关系 还要有权限表 和角色表也是多对多关系由于这个sql比较复杂 建议用mybatis</p>
+<p>由于我们之后使用token来保持会话，所以 我们可以将session保持会话方式禁用</p>
+<p><s>建议在学了token之后再关</s></p>
+<pre><code class="language-java">protected void configure(HttpSecurity http) throws Exception {http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);}
+</code></pre>
+<hr>
+<h4 id="方法授权">方法授权</h4>
+<p>在配置类上（加了configuration注解的类）使用</p>
+<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true )
+</code></pre>
+<p>开启方法授权 secured注解API支持</p>
+<pre><code class="language-java">@Secured(&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;)//允许匿名访问的方法（即任何人都可以访问）
+@Secured(&quot;ROLE_xx&quot;)//只有xx角色的可以访问
+
+</code></pre>
+<p>但不建议使用这个</p>
+<p>建议使用prepost注解</p>
+<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
+</code></pre>
+<pre><code class="language-java">@PreAuthorize(&quot;isAnonymous()&quot;) 匿名可以访问
+@PreAuthorize(&quot;hasAuthority('vip1','vip2')&quot;)有vip1和vip2的可以访问
+</code></pre>
 ]]></content>
     </entry>
 </feed>
