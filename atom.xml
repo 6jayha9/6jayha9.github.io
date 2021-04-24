@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2021-04-24T14:26:12.122Z</updated>
+    <updated>2021-04-24T14:29:38.080Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -55,11 +55,11 @@
 </blockquote>
 <p>用图说话：</p>
 <p>正常情况下：</p>
-<figure data-type="image" tabindex="1"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5Chystrix%5Ch1.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="1"><img src="https://riyugo.com/i/2021/04/24/10uroic.png" alt="" loading="lazy"></figure>
 <p>当一个依赖的节点坏掉时，将阻塞整个的用户请求：</p>
-<figure data-type="image" tabindex="2"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5Chystrix%5Chystrix2.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="2"><img src="https://riyugo.com/i/2021/04/24/10urvjg.png" alt="" loading="lazy"></figure>
 <p>流量高峰时，一个单节点的宕机或延迟，会迅速导致所有服务负载达到饱和。应用中任何一个可能通过网络访问其他服务的节点，都有可能成为造成潜在故障的来源。更严重的是，还可能导致服务之间的延迟增加，占用队列、线程等系统资源，从而导致多系统之间的级联故障。</p>
-<figure data-type="image" tabindex="3"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5Chystrix%5Ch3.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="3"><img src="https://riyugo.com/i/2021/04/24/10urnua.png" alt="" loading="lazy"></figure>
 <h3 id="什么是hystrix">什么是Hystrix</h3>
 <p>Hystrix是一个用于处理分布式系统的延迟和容错的开源库，在分布式系统里，许多依赖不可避免的会调用失败，比如超时，异常等，Hystrix能够保证在一个依赖出问题的情况下，不会导致整体服务失败，避免级联故障以提高分布式系统的弹性。<br>
 “断路器”本身是一种开关装置，当某个服务单元发生故障之后，通过断路器的故障监控(类似熔断保险丝)，向调用方返回一个服务预期的，可处理的备选响应(FallBack)，而不是长时间的等待或者抛出调用方法无法处理的异常，这样就可以保证了服务调用方的线程不会被长时间，不必要的占用，从而避免了故障在分布式系统中的蔓延，乃至雪崩。</p>
@@ -97,7 +97,7 @@
 <li>近实时地监控指标和配置的修改。</li>
 </ul>
 <p>用图来说就是</p>
-<figure data-type="image" tabindex="4"><img src="D:%5C%E5%9B%BE%E5%BA%8A%5Chystrix%5Ch4.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="4"><img src="https://riyugo.com/i/2021/04/24/10urxz5.png" alt="" loading="lazy"></figure>
 <h1 id="怎么用我觉得这个不太重要随便写了">怎么用（我觉得这个不太重要，随便写了）</h1>
 <p>工作原理：</p>
 <figure data-type="image" tabindex="5"><img src="https://img2020.cnblogs.com/blog/1096103/202003/1096103-20200328181431827-1970391529.png" alt="img" loading="lazy"></figure>
