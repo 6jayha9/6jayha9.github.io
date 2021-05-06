@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>springsecurity改写过滤链实现小程序登录 | Jayha小罗的秘密基地</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1620307747459">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="前期准备工作：
+前端调用一个wx.login()接口，成功后返回参数code
+前端调用一个wx.getUserinfo()接口，返回很多参数，重要的参数为rawData和signature
+这几个参数的作用分别是
+
+code：与appid、..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1620307747459" class="site-logo">
+        <h1 class="site-title">Jayha小罗的秘密基地</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">springsecurity改写过滤链实现小程序登录</h2>
+            <div class="post-date">2021-05-06</div>
+            
+              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/springsecurity-gai-xie-guo-lu-lian-shi-xian-xiao-cheng-xu-deng-lu.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <h3 id="前期准备工作">前期准备工作：</h3>
+<p>前端调用一个wx.login()接口，成功后返回参数code</p>
+<p>前端调用一个wx.getUserinfo()接口，返回很多参数，重要的参数为rawData和signature</p>
+<p>这几个参数的作用分别是</p>
+<blockquote>
+<p>code：与appid、appsecret一起作为参数，调用微信官方接口https://api.weixin.qq.com/sns/jscode2session?appid=%s&amp;secret=%s&amp;js_code=%s&amp;grant_type=authorization_code    会返回openid、session_key、errorcode、errmsg等参数信息。</p>
+<p>openid：自定义登录态所用。</p>
+</blockquote>
+<blockquote>
+<p>rawData：不包含敏感数据的原始数据字符串,用于签名校验。</p>
+<p>signature：用于签名校验数据完整性。具体做法是将rawData和session_key拼接，在后台使用SHA1算法解密后与调用微信接口返回的signature作比对校验数据完整性。</p>
+</blockquote>
+<hr>
+<h3 id="复习下springsecurity过滤链">复习下springsecurity过滤链</h3>
+<figure data-type="image" tabindex="1"><img src="https://jayhablog.vercel.app/post-images/1599995513270.png" alt="这张图贯穿整篇文章" loading="lazy"></figure>
+<p><code>这张图贯穿整篇文章！</code></p>
+<hr>
+<p>springsecurity过滤链第一层是UsernamePasswordAuthenticationFilter，小程序微信登录不需要username和password，我们舍弃它，重写。调出源码来，可以发现它是继承了一个AbstractAuthenticationProcessingFilter类，所以我们自己写的过滤器也要继承这个类。该类最重要的是 Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)方法，所以将它重写。</p>
+<p>我们看一看UsernamePasswordAuthenticationFilter是怎么重写这个方法的：</p>
+<pre><code class="language-java">public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    if (this.postOnly &amp;&amp; !request.getMethod().equals(&quot;POST&quot;)) {
+        throw new AuthenticationServiceException(&quot;Authentication method not supported: &quot; + request.getMethod());
+    } else {
+        String username = this.obtainUsername(request);
+        String password = this.obtainPassword(request);
+        if (username == null) {
+            username = &quot;&quot;;
+        }
+
+        if (password == null) {
+            password = &quot;&quot;;
+        }
+
+        username = username.trim();
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        this.setDetails(request, authRequest);
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
+}
+</code></pre>
+<p>可以发现是将username，password封装制作成token，之后再调用this.getAuthenticationManager().authenticate()封装这个token传给下一层过滤链。那我们就按照他的思路写我们用openid、seesion_key、rawData、signature代替username和password作用，那我们就将这四个封装成一个token，再像UsernamePasswordAuthenticationFilter传给下一层就好，那么现在唯一的问题是springsecurity没有对应的token提供，所以我们得自己写：</p>
+<p><em>重写token、加入openid、sessionKey、rawData、signature参数进行校验，查看常用的token，发现都继承AbstractAuthenticationToken这个抽象类，我们直接也继承它，加属性再配置对应的构造器和get/set就好了。我为了图方便，还将重写了getCredentials、getPrincipal()方法，方便之后使用，不重写也行只是为了方便。</em></p>
+<pre><code class="language-java">public Object getCredentials() {
+    return this.openid;
+}
+
+public Object getPrincipal() {
+    return this.sessionKey;
+}
+</code></pre>
+<p>然后我们就可以用httpServeletRequest、获取前端传过来的三个参数，再用其中的code参数结合自己的appid和appsecret、得到openid和session_key，再将其封装起来就好啦。这一个过滤链就解决。</p>
+<hr>
+<p>下一层的过滤器是AuthenticationManager，该层是真正执行认证逻辑的，我们也需要重写。我打算在这层顺便把没注册的用户给注册了，方便前端一键实现注册/登录。</p>
+<p>首先实现AuthenticationManager接口，会提示我们重写Authentication authenticate(Authentication authentication)方法。</p>
+<p>首先该方法的参数token就是上一层过滤器传过来的token，我们需要将它强转成我们自己的token，这样就可以获取到openid来查询数据库有没有该用户。</p>
+<p>有该用户即认证成功，直接丢给下一层过滤器就好。</p>
+<p>没有的话，就执行注册程序，当然，在注册前我们要首先使用SHA1算法和session_key，对rawdata进行解密，进行签名校验，保证数据完整性和保证不被恶意注册。</p>
+<p>rawData使用JSON转换，可以得到很多用户的信息，读者可以自己去试一试，因为占地方就不一一列举了。然后加入openid、session_key方便之后的校验，就可以存入数据库啦之后给下一层过滤器啦~</p>
+<p>下一层过滤器就不用我们自己写啦~~~~。</p>
+<p>btw记得登陆成功的handler要颁发token就好（颁发的token需要携带openid属性）。</p>
+<hr>
+<p>接下来我们要实现jwt鉴权。认证登录状态。这个比较简单，我几笔带过了。</p>
+<p>和平时写的一样继承OncePerRequestFilter抽象类。重写doFilterInternal方法。在该方法中从请求头获取token，从token中获取openid，获取不到或者返回错误就是有问题，抛出异常，返回错误日志给前端就行了。当然，如果security context为空也要报错给前端。</p>
+<hr>
+<p>好了 最后总配置一下security就好了</p>
+<pre><code class="language-java">@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()//关闭csrf保护
+                .sessionManagement()
+                // 不创建Session, 使用jwt来管理用户的登录状态
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                // /error 异常端点不需要用户认证
+                .antMatchers(&quot;/error/**&quot;).permitAll()
+                // 其余的全部需要用户认证
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler());
+            // 使用自己写的第一层过滤器替换默认的认证过滤器UsernamePasswordAuthenticationFilter
+        http.addFilterAt(wxAppletAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                // 在自己写的第一层过滤器前面添加用于验证jwt，识别用户是否登录的过滤器
+                .addFilterBefore(jwtAuthenticationTokenFilter(), WxAppletAuthenticationFilter.class);
+    }
+
+    @Autowired
+    private WxAppletAuthenticationManager wxAppletAuthenticationManager;
+
+    @Bean
+    public WxAppletAuthenticationFilter wxAppletAuthenticationFilter(){
+        WxAppletAuthenticationFilter wxAppletAuthenticationFilter = new WxAppletAuthenticationFilter(&quot;/login&quot;);
+        wxAppletAuthenticationFilter.setAuthenticationManager(wxAppletAuthenticationManager);
+       //将自己写的第二层过滤器加入过滤链中，并将登录接口设置为/login
+        wxAppletAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler());//登陆成功的handler加入springsecurity流程
+        return wxAppletAuthenticationFilter;
+    }
+
+    @Bean
+    public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler(){
+        return new CustomAuthenticationSuccessHandler();
+        //未登录时的处理端点, 一般是抛出AuthenticationException时会进入
+    }
+
+    @Bean
+    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
+        return new JwtAuthenticationTokenFilter();
+        //访问接口无权限时的处理端点, 一般是抛出AccessDeniedException异常时会进入
+    }
+
+}
+
+</code></pre>
+<p>附录：</p>
+<p>JwtTokenUtils</p>
+<pre><code class="language-java">package com.tanwb.util;
+
+import cn.hutool.core.date.DateTime;
+import com.google.common.collect.Maps;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.Map;
+import java.util.function.Function;
+
+/**
+ * jwt工具类
+ * @author tanwubo
+ */
+@Component
+public class JwtTokenUtils {
+
+    @Value(&quot;${jwt.expiration}&quot;)
+    private Long expiration;
+
+    public SecretKey key;
+
+    public JwtTokenUtils() {
+        key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public &lt;T&gt; T getClaimFromToken(String token, Function&lt;Claims, T&gt; claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(this.key)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String generateToken(String openid) {
+        Map&lt;String, Object&gt; claims = Maps.newHashMap();
+        return doGenerateToken(claims, openid);
+    }
+
+    private String doGenerateToken(Map&lt;String, Object&gt; claims, String subject) {
+        final Date createdDate = DateTime.now();
+        final Date expirationDate = calculateExpirationDate(createdDate);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(createdDate)
+                .setExpiration(expirationDate)
+                .signWith(this.key)
+                .compact();
+    }
+
+    private Date calculateExpirationDate(Date createdDate) {
+        return new Date(createdDate.getTime() + expiration * 1000);
+    }
+
+}
+
+</code></pre>
+<p>WxLoginResultDTO</p>
+<pre><code class="language-java">@Data
+public class WxLoginResultDTO {
+    private String openid;
+    private String session_key;
+    private String errcode;
+    private String errmsg;
+}
+</code></pre>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/hystrix-xiao-jie/">
+                  <h3 class="post-title">
+                    Hystrix小结
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2021-04-25T02:26:28.836Z</updated>
+    <updated>2021-05-06T13:29:09.819Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -10,6 +10,216 @@
     <logo>https://jayhablog.vercel.app/images/avatar.png</logo>
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
     <rights>All rights reserved 2021, Jayha小罗的秘密基地</rights>
+    <entry>
+        <title type="html"><![CDATA[springsecurity改写过滤链实现小程序登录]]></title>
+        <id>https://jayhablog.vercel.app/springsecurity-gai-xie-guo-lu-lian-shi-xian-xiao-cheng-xu-deng-lu/</id>
+        <link href="https://jayhablog.vercel.app/springsecurity-gai-xie-guo-lu-lian-shi-xian-xiao-cheng-xu-deng-lu/">
+        </link>
+        <updated>2021-05-06T13:27:36.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="前期准备工作">前期准备工作：</h3>
+<p>前端调用一个wx.login()接口，成功后返回参数code</p>
+<p>前端调用一个wx.getUserinfo()接口，返回很多参数，重要的参数为rawData和signature</p>
+<p>这几个参数的作用分别是</p>
+<blockquote>
+<p>code：与appid、appsecret一起作为参数，调用微信官方接口https://api.weixin.qq.com/sns/jscode2session?appid=%s&amp;secret=%s&amp;js_code=%s&amp;grant_type=authorization_code    会返回openid、session_key、errorcode、errmsg等参数信息。</p>
+<p>openid：自定义登录态所用。</p>
+</blockquote>
+<blockquote>
+<p>rawData：不包含敏感数据的原始数据字符串,用于签名校验。</p>
+<p>signature：用于签名校验数据完整性。具体做法是将rawData和session_key拼接，在后台使用SHA1算法解密后与调用微信接口返回的signature作比对校验数据完整性。</p>
+</blockquote>
+<hr>
+<h3 id="复习下springsecurity过滤链">复习下springsecurity过滤链</h3>
+<figure data-type="image" tabindex="1"><img src="https://jayhablog.vercel.app/post-images/1599995513270.png" alt="这张图贯穿整篇文章" loading="lazy"></figure>
+<p><code>这张图贯穿整篇文章！</code></p>
+<hr>
+<p>springsecurity过滤链第一层是UsernamePasswordAuthenticationFilter，小程序微信登录不需要username和password，我们舍弃它，重写。调出源码来，可以发现它是继承了一个AbstractAuthenticationProcessingFilter类，所以我们自己写的过滤器也要继承这个类。该类最重要的是 Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)方法，所以将它重写。</p>
+<p>我们看一看UsernamePasswordAuthenticationFilter是怎么重写这个方法的：</p>
+<pre><code class="language-java">public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    if (this.postOnly &amp;&amp; !request.getMethod().equals(&quot;POST&quot;)) {
+        throw new AuthenticationServiceException(&quot;Authentication method not supported: &quot; + request.getMethod());
+    } else {
+        String username = this.obtainUsername(request);
+        String password = this.obtainPassword(request);
+        if (username == null) {
+            username = &quot;&quot;;
+        }
+
+        if (password == null) {
+            password = &quot;&quot;;
+        }
+
+        username = username.trim();
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        this.setDetails(request, authRequest);
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
+}
+</code></pre>
+<p>可以发现是将username，password封装制作成token，之后再调用this.getAuthenticationManager().authenticate()封装这个token传给下一层过滤链。那我们就按照他的思路写我们用openid、seesion_key、rawData、signature代替username和password作用，那我们就将这四个封装成一个token，再像UsernamePasswordAuthenticationFilter传给下一层就好，那么现在唯一的问题是springsecurity没有对应的token提供，所以我们得自己写：</p>
+<p><em>重写token、加入openid、sessionKey、rawData、signature参数进行校验，查看常用的token，发现都继承AbstractAuthenticationToken这个抽象类，我们直接也继承它，加属性再配置对应的构造器和get/set就好了。我为了图方便，还将重写了getCredentials、getPrincipal()方法，方便之后使用，不重写也行只是为了方便。</em></p>
+<pre><code class="language-java">public Object getCredentials() {
+    return this.openid;
+}
+
+public Object getPrincipal() {
+    return this.sessionKey;
+}
+</code></pre>
+<p>然后我们就可以用httpServeletRequest、获取前端传过来的三个参数，再用其中的code参数结合自己的appid和appsecret、得到openid和session_key，再将其封装起来就好啦。这一个过滤链就解决。</p>
+<hr>
+<p>下一层的过滤器是AuthenticationManager，该层是真正执行认证逻辑的，我们也需要重写。我打算在这层顺便把没注册的用户给注册了，方便前端一键实现注册/登录。</p>
+<p>首先实现AuthenticationManager接口，会提示我们重写Authentication authenticate(Authentication authentication)方法。</p>
+<p>首先该方法的参数token就是上一层过滤器传过来的token，我们需要将它强转成我们自己的token，这样就可以获取到openid来查询数据库有没有该用户。</p>
+<p>有该用户即认证成功，直接丢给下一层过滤器就好。</p>
+<p>没有的话，就执行注册程序，当然，在注册前我们要首先使用SHA1算法和session_key，对rawdata进行解密，进行签名校验，保证数据完整性和保证不被恶意注册。</p>
+<p>rawData使用JSON转换，可以得到很多用户的信息，读者可以自己去试一试，因为占地方就不一一列举了。然后加入openid、session_key方便之后的校验，就可以存入数据库啦之后给下一层过滤器啦~</p>
+<p>下一层过滤器就不用我们自己写啦~~~~。</p>
+<p>btw记得登陆成功的handler要颁发token就好（颁发的token需要携带openid属性）。</p>
+<hr>
+<p>接下来我们要实现jwt鉴权。认证登录状态。这个比较简单，我几笔带过了。</p>
+<p>和平时写的一样继承OncePerRequestFilter抽象类。重写doFilterInternal方法。在该方法中从请求头获取token，从token中获取openid，获取不到或者返回错误就是有问题，抛出异常，返回错误日志给前端就行了。当然，如果security context为空也要报错给前端。</p>
+<hr>
+<p>好了 最后总配置一下security就好了</p>
+<pre><code class="language-java">@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()//关闭csrf保护
+                .sessionManagement()
+                // 不创建Session, 使用jwt来管理用户的登录状态
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                // /error 异常端点不需要用户认证
+                .antMatchers(&quot;/error/**&quot;).permitAll()
+                // 其余的全部需要用户认证
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler());
+            // 使用自己写的第一层过滤器替换默认的认证过滤器UsernamePasswordAuthenticationFilter
+        http.addFilterAt(wxAppletAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                // 在自己写的第一层过滤器前面添加用于验证jwt，识别用户是否登录的过滤器
+                .addFilterBefore(jwtAuthenticationTokenFilter(), WxAppletAuthenticationFilter.class);
+    }
+
+    @Autowired
+    private WxAppletAuthenticationManager wxAppletAuthenticationManager;
+
+    @Bean
+    public WxAppletAuthenticationFilter wxAppletAuthenticationFilter(){
+        WxAppletAuthenticationFilter wxAppletAuthenticationFilter = new WxAppletAuthenticationFilter(&quot;/login&quot;);
+        wxAppletAuthenticationFilter.setAuthenticationManager(wxAppletAuthenticationManager);
+       //将自己写的第二层过滤器加入过滤链中，并将登录接口设置为/login
+        wxAppletAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler());//登陆成功的handler加入springsecurity流程
+        return wxAppletAuthenticationFilter;
+    }
+
+    @Bean
+    public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler(){
+        return new CustomAuthenticationSuccessHandler();
+        //未登录时的处理端点, 一般是抛出AuthenticationException时会进入
+    }
+
+    @Bean
+    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
+        return new JwtAuthenticationTokenFilter();
+        //访问接口无权限时的处理端点, 一般是抛出AccessDeniedException异常时会进入
+    }
+
+}
+
+</code></pre>
+<p>附录：</p>
+<p>JwtTokenUtils</p>
+<pre><code class="language-java">package com.tanwb.util;
+
+import cn.hutool.core.date.DateTime;
+import com.google.common.collect.Maps;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.Map;
+import java.util.function.Function;
+
+/**
+ * jwt工具类
+ * @author tanwubo
+ */
+@Component
+public class JwtTokenUtils {
+
+    @Value(&quot;${jwt.expiration}&quot;)
+    private Long expiration;
+
+    public SecretKey key;
+
+    public JwtTokenUtils() {
+        key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public &lt;T&gt; T getClaimFromToken(String token, Function&lt;Claims, T&gt; claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(this.key)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String generateToken(String openid) {
+        Map&lt;String, Object&gt; claims = Maps.newHashMap();
+        return doGenerateToken(claims, openid);
+    }
+
+    private String doGenerateToken(Map&lt;String, Object&gt; claims, String subject) {
+        final Date createdDate = DateTime.now();
+        final Date expirationDate = calculateExpirationDate(createdDate);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(createdDate)
+                .setExpiration(expirationDate)
+                .signWith(this.key)
+                .compact();
+    }
+
+    private Date calculateExpirationDate(Date createdDate) {
+        return new Date(createdDate.getTime() + expiration * 1000);
+    }
+
+}
+
+</code></pre>
+<p>WxLoginResultDTO</p>
+<pre><code class="language-java">@Data
+public class WxLoginResultDTO {
+    private String openid;
+    private String session_key;
+    private String errcode;
+    private String errmsg;
+}
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hystrix小结]]></title>
         <id>https://jayhablog.vercel.app/hystrix-xiao-jie/</id>
@@ -2031,224 +2241,6 @@ Redis会将一个事务中的所有命令序列化，然后按顺序执行。<br
 解决死锁：<br>
 1）通过Redis中expire()给锁设定最大持有时间，如果超过，则Redis来帮我们释放锁。<br>
 2） 使用 setnx key “当前系统时间+锁持有的时间”和getset key “当前系统时间+锁持有的时间”组合的命令就可以实现</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[spring-security安全认证框架Part1（非OAuth2部分）]]></title>
-        <id>https://jayhablog.vercel.app/spring-security-an-quan-ren-zheng-kuang-jia-1/</id>
-        <link href="https://jayhablog.vercel.app/spring-security-an-quan-ren-zheng-kuang-jia-1/">
-        </link>
-        <updated>2020-09-13T11:09:48.000Z</updated>
-        <content type="html"><![CDATA[<hr>
-<p>spring-security是通过servlet的filter链方式实现的一种认证，授权<br>
-<img src="https://jayhablog.vercel.app/post-images/1599995513270.png" alt="" loading="lazy"><br>
-快速入门（在内存中使用）；</p>
-<p>在内存中的使用非常简单</p>
-<p>阅读代码即可</p>
-<pre><code class="language-java">@Configuration
-@EnableWebSecurity
-public class securityConfig extends WebSecurityConfigurerAdapter {
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
-        return new BCryptPasswordEncoder();
-    }
-    @Bean
-    public UserDetailsService userDetailsService(){
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        return  manager;
-    }
-    /**
-     * 该方法是授权相关方法
-     * @param http
-     * @throws Exception
-     */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        //首页所有人可以访问&quot;/&quot;
-        http.authorizeRequests()
-                .antMatchers(&quot;/&quot;).permitAll()
-                .antMatchers(&quot;/index.html&quot;).permitAll()
-                .antMatchers(&quot;/index&quot;).permitAll()
-                .antMatchers(&quot;/home&quot;).permitAll()
-                .antMatchers(&quot;/welcome&quot;).permitAll()
-                .antMatchers(&quot;/level1/**&quot;).hasRole(&quot;vip1&quot;)
-                .antMatchers(&quot;/level2/**&quot;).hasRole(&quot;vip2&quot;)
-                .antMatchers(&quot;/level3/**&quot;).hasRole(&quot;vip3&quot;)
-        .and().formLogin()//开启自定义页面
-                .loginPage(&quot;/userlogin&quot;).loginProcessingUrl(&quot;/welcome&quot;).usernameParameter(&quot;username&quot;).passwordParameter(&quot;password&quot;).
-                failureHandler((req, resp, exception) -&gt; {
-                    resp.setContentType(&quot;application/json;charset=utf-8&quot;);
-                            PrintWriter out = resp.getWriter();
-                            out.write(&quot;登录失败...&quot;);
-                    out.flush();
-                })
-                .permitAll()
-                .and()
-                .httpBasic()
-                .and()
-                // 关闭CSRF跨域
-                .csrf().disable();
-        ;
-        //没有权限跳到登录页
-        /*http.formLogin();*/
-        //关闭csrf功能
-        //http.csrf().disable();
-        //开启注销 成功跳到“/”
-        http.logout().logoutSuccessUrl(&quot;/&quot;);
-    }
-
-    /**
-     * 该方法是认证相关方法
-     * @param auth
-     * @throws Exception
-     */
-    /*@Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //从内存中读
-        //使用BCrypt加密
-
-        auth.inMemoryAuthentication().passwordEncoder(passwordEncoder())
-                .withUser(&quot;jayha&quot;).password(passwordEncoder().encode(&quot;123456&quot;)).roles(&quot;vip3&quot;,&quot;vip2&quot;)
-                .and()
-                .withUser(&quot;nanha&quot;).password(passwordEncoder().encode(&quot;123456&quot;)).roles(&quot;vip1&quot;);
-
-    }*/
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // 设置拦截忽略url - 会直接过滤该url - 将不会经过Spring Security过滤器链
-        web.ignoring().antMatchers(&quot;/getUserInfo&quot;);
-        // 设置拦截忽略文件夹，可以对静态资源放行
-        web.ignoring().antMatchers(&quot;/css/**&quot;, &quot;/js/**&quot;);
-
-    }
-}
-</code></pre>
-<hr>
-<hr>
-<p>BCryptPasswordEncoder</p>
-<p>是spring提供的一种特殊加密方式，建议数据库以次类方式存储，有静态方法hashpw(实际密码，盐分值[也可由Bcrypt自动生成])</p>
-<pre><code class="language-java">void testBcrypto(){
-        String s1 = BCrypt.hashpw(&quot;sir159357&quot;, BCrypt.gensalt());
-        String s2 = BCrypt.hashpw(&quot;sir159357&quot;, BCrypt.gensalt());
-
-        System.out.println(s1);
-        System.out.println(s2);
-    }
-</code></pre>
-<p>结果</p>
-<pre><code class="language-tex">s1:$2a$10$WH2U/RLezICmMu8cAN2kQ.vWb46UOEtYbHgMeri8bc4JHGtKVGSKy
-
-s2:$2a$10$aLTNf4pFC3OwyEM/r.9aeepuid9efVaLlvdqpNEDO01vPX.17kc0O
-</code></pre>
-<p>所以配置一个名为passwordEncoder的bean 该bean返回的值 就是security的编码方式</p>
-<pre><code class="language-java">@Bean
-    public PasswordEncoder passwordEncoder() {
-        // BCryptPasswordEncoder：Spring Security 提供的加密工具，可快速实现加密加盐
-        return new BCryptPasswordEncoder();
-    }
-</code></pre>
-<p>接下来 我们就可以从内存过渡到数据库了</p>
-<p>回到springsecurity流程图 我们可以发现认证是由一个叫做UserDetailsService的接口进行实现的。我们可以实现这个接口并把ta加入到IOC容器中</p>
-<pre><code class="language-java">@Service
-public class userdetailService implements UserDetailsService {
-
-    @Autowired
-    ItestuserDAO itestuserDAO;
-
-    @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        testuser one = itestuserDAO.findOneByAccount(s);
-        if(one == null){
-            return null;//不用自己抛出异常 返回NULL spring=security会自动整理
-        }else{
-            UserDetails details = User.withUsername(one.getAccount()).password(one.getPassword()).authorities(&quot;vip1&quot;).build();//withusername方法即把username加入 password同理，authorities则是将用户进行授权操作
-            return details;
-        }
-    }
-}
-</code></pre>
-<p>注意的是这里给用户授权的是auth 而在SecurityConfig里面是授权的role 二者是不同授权理念的具体实现，现在一般是role（角色）包含auth（权限）这种操作  要注意更改</p>
-<p><s>俺最初没理解好这两个东西的概念在这疯狂踩坑</s></p>
-<pre><code class="language-java">@Override
-    protected void configure(HttpSecurity http) throws Exception {
-        //首页所有人可以访问&quot;/&quot;
-        http.authorizeRequests()
-                .antMatchers(&quot;/&quot;).permitAll()
-                .antMatchers(&quot;/index.html&quot;).permitAll()
-                .antMatchers(&quot;/index&quot;).permitAll()
-                .antMatchers(&quot;/home&quot;).permitAll()
-                .antMatchers(&quot;/welcome&quot;).permitAll()
-                .antMatchers(&quot;/level1/**&quot;).hasAuthority(&quot;vip1&quot;)
-                .antMatchers(&quot;/level2/**&quot;).hasAuthority(&quot;vip2&quot;)
-                .antMatchers(&quot;/level3/**&quot;).hasAuthority(&quot;vip3&quot;)
-                .and()
-                .formLogin()//开启自定义页面
-                .loginPage(&quot;/userlogin&quot;)
-                .loginProcessingUrl(&quot;/welcome&quot;)
-                .usernameParameter(&quot;username&quot;)
-                .passwordParameter(&quot;password&quot;)
-
-                .failureHandler((req, resp, exception) -&gt; {
-                    resp.setContentType(&quot;application/json;charset=utf-8&quot;);
-                            PrintWriter out = resp.getWriter();
-                            out.write(&quot;登录失败...&quot;);
-                    out.flush();
-                }).permitAll()
-                .and()
-                .httpBasic()
-                .and()
-                // 关闭CSRF跨域
-                .csrf().disable().cors();
-        ;
-        http.logout().logoutSuccessUrl(&quot;/&quot;);
-    }
-</code></pre>
-<h5 id="用户登录后获取用户信息">用户登录后获取用户信息</h5>
-<p>可以使用</p>
-<pre><code class="language-java">Authentication authentication =SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-</code></pre>
-<p>principal就是UserDetail对象 可以强转后使用它的各种方法 比如获取姓名：</p>
-<pre><code class="language-java"> @GetMapping(&quot;/getName&quot;)
-    public String getUserAccount(){
-        String account= null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        if(principal == null){
-            account = &quot;匿名&quot;;
-        }
-        if(principal instanceof UserDetails){
-            UserDetails u = (UserDetails)principal;
-            account = u.getUsername();
-        }
-        return account;
-    }
-</code></pre>
-<p>数据库的建立 除了用户类外 还要有角色表 与用户表是多对多关系 还要有权限表 和角色表也是多对多关系由于这个sql比较复杂 建议用mybatis</p>
-<p>由于我们之后使用token来保持会话，所以 我们可以将session保持会话方式禁用</p>
-<p><s>建议在学了token之后再关</s></p>
-<pre><code class="language-java">protected void configure(HttpSecurity http) throws Exception {http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);}
-</code></pre>
-<hr>
-<h4 id="方法授权">方法授权</h4>
-<p>在配置类上（加了configuration注解的类）使用</p>
-<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true )
-</code></pre>
-<p>开启方法授权 secured注解API支持</p>
-<pre><code class="language-java">@Secured(&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;)//允许匿名访问的方法（即任何人都可以访问）
-@Secured(&quot;ROLE_xx&quot;)//只有xx角色的可以访问
-
-</code></pre>
-<p>但不建议使用这个</p>
-<p>建议使用prepost注解</p>
-<pre><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
-</code></pre>
-<pre><code class="language-java">@PreAuthorize(&quot;isAnonymous()&quot;) 匿名可以访问
-@PreAuthorize(&quot;hasAuthority('vip1','vip2')&quot;)有vip1和vip2的可以访问
-</code></pre>
 ]]></content>
     </entry>
 </feed>
