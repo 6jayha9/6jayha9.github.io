@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha小罗的秘密基地</title>
-    <updated>2021-06-03T09:26:07.340Z</updated>
+    <updated>2021-06-03T12:01:53.831Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -25,15 +25,15 @@
 <h3 id="m-way树">M-way树</h3>
 <p>然而当库表数据大到一定程度的时候，搜索效率还是会下降，我们就需要建一个稀疏index表，选举之前的index表的部分节点到稀疏index表中，并将选举出来的点作为分割点，将原先的表进行分割，稀疏的index表中，索引和指向之前的表分裂出来的子表的指针交错，同样的思想，可以不只建一层稀疏索引，可以建多层，取决于数据库数据量大小，但稀疏index表最少都要有两行数据，因为一行没有意义。</p>
 <p>大概长这样</p>
-<figure data-type="image" tabindex="1"><img src="https://cdnir.com/i/2021/06/02/xflnds.jpg" alt="" loading="lazy"></figure>
+<p><img src="https://jayhablog.vercel.app/post-images/1622721680082.jpg" alt="" loading="lazy"><img src="https://cdnir.com/i/2021/06/02/xflnds.jpg" alt="" loading="lazy"></p>
 <p>key就是关键字。</p>
 <p>把这个东西横过来，就长得很像树啦，我们称之为M-way树（其实真正的M-way树除了key和指向之前的表分裂出来的子表的指针外 还有一个recordpoint即指向数据库中真正数据地址的指针，也就是key和recordpoint形成了索引）。</p>
-<figure data-type="image" tabindex="2"><img src="https://cdnir.com/i/2021/06/02/xizh5j.jpg" alt="" loading="lazy"></figure>
+<p><img src="https://jayhablog.vercel.app/post-images/1622721696270.jpg" alt="" loading="lazy"><img src="https://cdnir.com/i/2021/06/02/xizh5j.jpg" alt="" loading="lazy"></p>
 <p>这里能读懂也就基本能了解B树的思想了，因为B树就是M-way树加了限制条件的一种数据结构</p>
 <hr>
 <h3 id="b树">B树</h3>
 <p>M-way树最大的问题是，不能自维护插入和删除数据的时候，所以希望它进行自我管理，这就是B树的实现目的。</p>
-<figure data-type="image" tabindex="3"><img src="https://cdnir.com/i/2021/06/02/xca4er.png" alt="" loading="lazy"></figure>
+<p><img src="https://jayhablog.vercel.app/post-images/1622721701553.png" alt="" loading="lazy"><img src="https://cdnir.com/i/2021/06/02/xca4er.png" alt="" loading="lazy"></p>
 <p>通常我们说m阶的B树（阶即是一个结点最多可以拥有多少个子节点），它必须满足如下条件：</p>
 <ul>
 <li>每个节点最多只有m个子节点。</li>
@@ -52,7 +52,7 @@
 <p>其次是由于局部预读性，本来B树预读的数据，其附近的关键字和和其绝对值相差往往较大（一个节点中两个相邻的key和recordpoint的绝对值是他们之间的指针指向的子树所有值的总和），指向子节点的指针又没有预读的需要，在范围查找中，二次搜索命中预读的概率较低，而B+树读取的是叶子节点，叶子节点无指向子节点的索引，相邻关键字的绝对值又比较小，预读命中概率就大了。</p>
 <p>其次是B+树查询更为稳定，因为一定要查询到叶子节点才能得到地址。</p>
 <p>最后是所有叶子节点使用链表方式进行串联，查找到叶子节点后可以直接对叶子节点进行遍历，便于范围查找。</p>
-<figure data-type="image" tabindex="4"><img src="https://cdnir.com/i/2021/06/03/shhx53.png" alt="" loading="lazy"></figure>
+<p><img src="https://jayhablog.vercel.app/post-images/1622721710014.png" alt="" loading="lazy"><img src="https://cdnir.com/i/2021/06/03/shhx53.png" alt="" loading="lazy"></p>
 ]]></content>
     </entry>
     <entry>
