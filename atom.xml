@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
-    <title>Jayha小罗的秘密基地</title>
-    <updated>2021-06-03T12:01:53.831Z</updated>
+    <title>Jayha真的卷不动了</title>
+    <updated>2021-06-06T11:36:02.975Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
     <subtitle>欢迎来到Jayha小罗的Blog嘻嘻嘻：）</subtitle>
     <logo>https://jayhablog.vercel.app/images/avatar.png</logo>
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
-    <rights>All rights reserved 2021, Jayha小罗的秘密基地</rights>
+    <rights>All rights reserved 2021, Jayha真的卷不动了</rights>
     <entry>
         <title type="html"><![CDATA[我理解的M-WAY树＆B树＆B+树]]></title>
         <id>https://jayhablog.vercel.app/wo-li-jie-de-m-way-shu-andb-shu-andbshu/</id>
