@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jayhablog.vercel.app</id>
     <title>Jayha真的卷不动了</title>
-    <updated>2021-07-03T14:20:02.835Z</updated>
+    <updated>2021-07-06T08:05:02.859Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jayhablog.vercel.app"/>
     <link rel="self" href="https://jayhablog.vercel.app/atom.xml"/>
@@ -11,13 +11,29 @@
     <icon>https://jayhablog.vercel.app/favicon.ico</icon>
     <rights>All rights reserved 2021, Jayha真的卷不动了</rights>
     <entry>
-        <title type="html"><![CDATA[INNODB锁体系 一图胜千言]]></title>
-        <id>https://jayhablog.vercel.app/innodb-suo-ti-xi-yi-tu-sheng-qian-yan/</id>
-        <link href="https://jayhablog.vercel.app/innodb-suo-ti-xi-yi-tu-sheng-qian-yan/">
+        <title type="html"><![CDATA[用图涵盖mysql与innodb所有重要知识点]]></title>
+        <id>https://jayhablog.vercel.app/yong-tu-han-gai-mysql-yu-innodb-suo-you-chong-yao-zhi-shi-dian/</id>
+        <link href="https://jayhablog.vercel.app/yong-tu-han-gai-mysql-yu-innodb-suo-you-chong-yao-zhi-shi-dian/">
         </link>
-        <updated>2021-07-02T02:51:01.000Z</updated>
-        <content type="html"><![CDATA[<p><img src="https://jayhablog.vercel.app/post-images/1625321854147.png" alt="" loading="lazy"><br>
-其实就是我懒得写 之后有空再把每一个方格具体意思给写了吧。原谅我插入这么多水印。</p>
+        <updated>2021-07-06T07:48:11.000Z</updated>
+        <content type="html"><![CDATA[<p>这两天肠胃炎，疼的多少有点学不进去，就打算梳理下最近自己刚读完的《mysql技术内幕 innodb存储引擎》，我对这本书的评价是，虽有错误，虽不特别全面，但深入且详细，瑕不掩瑜，是本难得的好书。而疏梳理这本书的模式，我考虑了下还是选择了做图吧，知识点太多，大部分只能给出一个名词和宽泛的概念，读者可自行根据名词阅读博客或者照着这些图去读《mysql技术内幕》这本书。受益良多。<br>
+关于这个标题，肯定是不可能涵盖所有重要知识点，毕竟mysql与innodb引擎博大精深。但我在牛客翻了一会，暂时在mysql与innodb方面，面试官很少会提出超出这些范围的问题，有也是关于分库分表的知识了，至于分库分表，着实晦涩而且庞杂，我打算慢慢啃读之后再说，这里就不做图了。<br>
+祝大家加油呀！<br>
+<img src="https://jayhablog.vercel.app/post-images/1625558516619.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558526900.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558558253.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558565949.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558572912.png" alt="" loading="lazy"></p>
+<p>补充一个<br>
+<strong>innodb与myisam的区别：</strong></p>
+<p>1.一个在5.5.8之前默认，一个在之后默认；</p>
+<p>2.行锁设计，支持外键，面向在线事务处理，非锁定读，myisam全都不支持。</p>
+<p>3.innodb聚簇索引，myisam索引数据分离。innodb会在无主键的情况下，生成rowid做主键。</p>
+<p>4.innodb将表单独存放在ibd文件，myisam将索引和数据分别放在MYI和MYD文件中。</p>
+<p><code>5.myisam缓存池只缓存索引，不缓存数据。并且支持全文检索索引，查询更快。</code></p>
+<p>6.innodb通过MVCC与锁的方式实现高并发性，myisam只用锁。</p>
+<p>7.innodb支持<code>自适应哈希索引</code>，myisam不支持。</p>
+<p>8.innodb的存储限制在64T，myisam无限制</p>
 ]]></content>
     </entry>
     <entry>

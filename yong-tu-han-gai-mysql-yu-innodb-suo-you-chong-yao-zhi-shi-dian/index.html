@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>用图涵盖mysql与innodb所有重要知识点 | Jayha真的卷不动了</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.0/css/all.min.css">
+<link rel="shortcut icon" href="https://jayhablog.vercel.app/favicon.ico?v=1625558700539">
+<link rel="stylesheet" href="https://jayhablog.vercel.app/styles/main.css">
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="这两天肠胃炎，疼的多少有点学不进去，就打算梳理下最近自己刚读完的《mysql技术内幕 innodb存储引擎》，我对这本书的评价是，虽有错误，虽不特别全面，但深入且详细，瑕不掩瑜，是本难得的好书。而疏梳理这本书的模式，我考虑了下还是选择了做图..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jayhablog.vercel.app">
+        <img src="https://jayhablog.vercel.app/images/avatar.png?v=1625558700539" class="site-logo">
+        <h1 class="site-title">Jayha真的卷不动了</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://jayhablog.vercel.app/guan-yu-ben-zhan" class="site-nav">
+            关于本站呢~
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      欢迎来到Jayha小罗的Blog嘻嘻嘻：）
+    </div>
+    <div class="site-footer">
+      <a href="https://gitee.com/jayha" target="_blank">Jayha的Gitee首页</a> | <a class="rss" href="https://jayhablog.vercel.app/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">用图涵盖mysql与innodb所有重要知识点</h2>
+            <div class="post-date">2021-07-06</div>
+            
+              <div class="feature-container" style="background-image: url('https://jayhablog.vercel.app/post-images/yong-tu-han-gai-mysql-yu-innodb-suo-you-chong-yao-zhi-shi-dian.jpg')">
+              </div>
+            
+            <div class="post-content" v-pre>
+              <p>这两天肠胃炎，疼的多少有点学不进去，就打算梳理下最近自己刚读完的《mysql技术内幕 innodb存储引擎》，我对这本书的评价是，虽有错误，虽不特别全面，但深入且详细，瑕不掩瑜，是本难得的好书。而疏梳理这本书的模式，我考虑了下还是选择了做图吧，知识点太多，大部分只能给出一个名词和宽泛的概念，读者可自行根据名词阅读博客或者照着这些图去读《mysql技术内幕》这本书。受益良多。<br>
+关于这个标题，肯定是不可能涵盖所有重要知识点，毕竟mysql与innodb引擎博大精深。但我在牛客翻了一会，暂时在mysql与innodb方面，面试官很少会提出超出这些范围的问题，有也是关于分库分表的知识了，至于分库分表，着实晦涩而且庞杂，我打算慢慢啃读之后再说，这里就不做图了。<br>
+祝大家加油呀！<br>
+<img src="https://jayhablog.vercel.app/post-images/1625558516619.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558526900.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558558253.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558565949.png" alt="" loading="lazy"><br>
+<img src="https://jayhablog.vercel.app/post-images/1625558572912.png" alt="" loading="lazy"></p>
+<p>补充一个<br>
+<strong>innodb与myisam的区别：</strong></p>
+<p>1.一个在5.5.8之前默认，一个在之后默认；</p>
+<p>2.行锁设计，支持外键，面向在线事务处理，非锁定读，myisam全都不支持。</p>
+<p>3.innodb聚簇索引，myisam索引数据分离。innodb会在无主键的情况下，生成rowid做主键。</p>
+<p>4.innodb将表单独存放在ibd文件，myisam将索引和数据分别放在MYI和MYD文件中。</p>
+<p><code>5.myisam缓存池只缓存索引，不缓存数据。并且支持全文检索索引，查询更快。</code></p>
+<p>6.innodb通过MVCC与锁的方式实现高并发性，myisam只用锁。</p>
+<p>7.innodb支持<code>自适应哈希索引</code>，myisam不支持。</p>
+<p>8.innodb的存储限制在64T，myisam无限制</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jayhablog.vercel.app/wo-li-jie-de-m-way-shu-andb-shu-andbshu/">
+                  <h3 class="post-title">
+                    我理解的M-WAY树＆B树＆B+树
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
